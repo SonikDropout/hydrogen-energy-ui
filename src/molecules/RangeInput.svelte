@@ -2,10 +2,12 @@
   export let range = [0, 100];
   export let disabled;
   export let onChange;
+  export let name;
+  export let defaultValue = range[0];
 
   let step = 1;
 
-  $: value = range[0];
+  $: value = defaultValue;
   $: min = Math.min.apply(null, range);
   $: max = Math.max.apply(null, range);
   $: diff = max - min;
@@ -21,16 +23,17 @@
     showControls = false;
 
   function increment() {
+    console.log(name);
     if (value + step <= max) {
       value = +(value + step).toPrecision(3);
-      onChange(value);
+      onChange(value, name);
     }
   }
 
   function decrement() {
     if (value - step >= min) {
       value = +(value - step).toPrecision(3);
-      onChange(value);
+      onChange(value, name);
     }
   }
 
@@ -58,11 +61,11 @@
 
 <style>
   .input-wrapper {
-    min-width: 16rem;
+    width: 16rem;
     border-radius: 4px;
-    border: 1px solid var(--text-color);
-    height: 4rem;
-    line-height: 4rem;
+    border: 1px solid var(--corporate-blue);
+    height: 3.2rem;
+    line-height: 3.2rem;
     display: flex;
   }
   .input-wrapper.disabled {
@@ -74,26 +77,24 @@
     border: none;
     font-size: 2rem;
     text-align: center;
-    border-left: 1px solid;
-    border-right: 1px solid;
     display: inline-block;
-    border-color: var(--text-color);
   }
   button {
     border: none;
     background-color: transparent;
-    width: 4rem;
-    font-size: 3.2rem;
-    line-height: 4rem;
+    width: 3.2rem;
+    font-size: 2.4rem;
+    line-height: 3.2rem;
     font-weight: 300;
     outline: none;
+    background-color: var(--corporate-blue);
+    color: var(--bg-color);
   }
   button:focus {
     outline: none;
   }
   button:disabled {
-    color: var(--corporate-grey);
-    opacity: 0.8;
+    opacity: 0.5;
   }
 </style>
 
@@ -103,7 +104,7 @@
     class="decrementer"
     on:pointerdown={pressDecrement}
     on:pointerup={release}>
-    -
+    <span>-</span>
   </button>
   <span class="input">{value}</span>
   <button
@@ -111,6 +112,6 @@
     class="incrementer"
     on:pointerdown={pressIncrement}
     on:pointerup={release}>
-    +
+    <span>+</span>
   </button>
 </span>

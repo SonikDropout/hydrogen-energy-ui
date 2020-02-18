@@ -1,6 +1,8 @@
 <script>
   import uuid from 'uuid';
   export let checked;
+  export let value;
+  export let name;
   const id = uuid();
 </script>
 
@@ -46,5 +48,5 @@
   }
 </style>
 
-<input type="checkbox" id="{id}" on:change bind:checked>
+<input type="checkbox" id="{id}" {value} {name} on:change bind:checked>
 <label for="{id}"><slot></slot> <span class:checked>{checked ? 'вкл' : 'выкл'}</span></label>

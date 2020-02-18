@@ -13,7 +13,7 @@ const mode = process.env.NODE_ENV;
 function reloadOnChange(win) {
   if (mode !== 'development' && mode !== 'test') return { close: () => {} };
 
-  const watcher = require('chokidar').watch(path.join(__dirname, '**'), {
+  const watcher = require('chokidar').watch(path.join(__dirname, 'dist', '**'), {
     ignoreInitial: true,
   });
 
@@ -42,6 +42,7 @@ function initPeripherals(win) {
   return {
     removeAllListeners() {
       usbPort.removeAllListeners();
+      serial.unsubscribeAll();
     },
   };
 }

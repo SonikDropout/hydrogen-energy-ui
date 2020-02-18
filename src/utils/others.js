@@ -1,6 +1,6 @@
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
-const concat = (objects, names) => {
+const mergeRename = (objects, names) => {
   const result = {};
   for (let i = 0; i < objects.length; i++) {
     for (let key in objects[i]) {
@@ -24,4 +24,4 @@ const countKeys = (obj) => {
   return n;
 };
 
-module.exports = { clone, concat, capitalize, getFileDate, countKeys };
+module.exports = { clone, mergeRename, capitalize, getFileDate, countKeys };

@@ -8,15 +8,15 @@
 
 <style>
   div {
-    width: 300wv;
+    width: 300vw;
     display: flex;
     transition: 0.3s ease-in-out;
   }
   div.research {
-    transform: translateX(100vw);
+    transform: translateX(-100vw);
   }
   div.charts {
-    transform: translateX(200vw);
+    transform: translateX(-200vw);
   }
 </style>
 

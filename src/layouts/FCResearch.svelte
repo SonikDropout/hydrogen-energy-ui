@@ -3,95 +3,196 @@
   import Select from "../molecules/Select";
   import Toggle from "../atoms/Toggle";
   import RangeInput from "../molecules/RangeInput";
-  import Warnings from '../molecules/Warnings';
-  import { data, connectionType } from "../stores";
+  import Warnings from "../molecules/Warnings";
+  import { data, commonData, systemState, connectionType } from "../stores";
+  import { COMMANDS } from "../constants";
+  import { ipcRenderer } from "electron";
   export let onPrev;
   export let onNext;
 
+  $: isActive = systemState.onoff;
+
+  const characteristics = [
+    "voltage",
+    "current",
+    "power",
+    "temp1",
+    "temp2",
+    "consumption"
+  ];
+
   const FCColumns = [
     {
-      title: "БТЭ 1",
-      name: "first",
-      characteristics: [
-        "voltage",
-        "current",
-        "power",
-        "temp1",
-        "temp2",
-        "consumption"
-      ]
+      pos: 1,
+      characteristics
+    },
+    {
+      pos: 2,
+      characteristics
     }
   ];
 
   const commonCharacteristics = [
     "pressure",
-    "temp",
+    "tankTemp",
     "consumption",
     "power",
     "voltage",
     "current",
-    "internalCurrent",
-    "externalCurrent"
+    "currentInternal",
+    "currentExternal"
   ];
 
-  const connectionTypeOptions = {};
-  const loadModeOptions = {};
-  let selectedLoadMode, isActive;
+  const connectionTypeOptions = [
+    { label: "последовательное", value: 0 },
+    { label: "параллельное", value: 1 },
+    { label: "только БТЭ 1", value: 2 },
+    { label: "только БТЭ 2", value: 3 }
+  ];
+  const loadModeOptions = [
+    { label: "внутр нагрузка отключена", value: 0 },
+    { label: "постоянный ток", value: 1, symbol: "U" },
+    { label: "постоянное напряжение", value: 2, symbol: "I" },
+    { label: "постоянная мощность", value: 3, symbol: "P" }
+  ];
 
-  function setConnectionType(type) {
-    connectionType.set(type)
+  let selectedLoadMode = loadModeOptions[0];
+
+  function setConnectionType(t) {
+    connectionType.set(+t);
+    ipcRenderer.send("serialCommand", COMMANDS.switchConnectionType(+t));
   }
-  function setLoadMode() {}
-  function setLoadValue() {}
-  function toggleFC() {}
+  function setLoadMode(m) {
+    selectedLoadMode = loadModeOptions[m];
+    ipcRenderer.send("serialCommand", COMMANDS.switchLoadMode(+m));
+  }
+  function setLoadValue(v) {
+    ipcRenderer.send("serialCommand", COMMANDS.setValue(+v));
+  }
+  function toggleFC(e) {
+    ipcRenderer.send(
+      "serialCommands",
+      COMMANDS[(e.target.checked ? "open" : "close") + "Valve" + e.target.name]
+    );
+  }
+
+  function toggleAll() {
+    isActive = !isActive;
+    ipcRenderer.send("serialCommand", COMMANDS[isActive ? "start" : "stop"]);
+  }
 </script>
+
+<style>
+  .row {
+    display: flex;
+    justify-content: space-evenly;
+  }
+  .col {
+    flex: 1 1 30rem;
+    max-width: 30rem;
+  }
+  .col.o-2 {
+    order: 2;
+  }
+  ul {
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+    width: 15rem;
+  }
+  span.label {
+    display: inline-block;
+    width: 11rem;
+  }
+  .onoff {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-valve {
+    height: 6.4rem;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .fc-toggler {
+    display: inline-block;
+    vertical-align: middle;
+  }
+</style>
 
 <div class="layout">
   <header>Исследование работы топливных элементов</header>
   <main>
-    <div class="select-field">
-      <div class="label">Тип соединения</div>
-      <Select onChange={setConnectionType} options={connectionTypeOptions} />
-    </div>
-    <div class="select-field">
-      <div class="label">Режим нагрузки</div>
-      <Select onChange={setLoadMode} options={loadModeOptions} />
-    </div>
-    {#if selectedLoadMode}
-      <div class="load-mode">
-        <span class="label">Задать {selectedLoadMode.label}</span>
-        <RangeInput onChange={setLoadValue} />
+    <div class="row">
+      <div class="select-field col">
+        <div class="label">Тип соединения</div>
+        <Select onChange={setConnectionType} options={connectionTypeOptions} />
       </div>
-    {/if}
-    <h3>БТЭ 1</h3>
-    <img src="../static/icons/valve" alt="valve" />
-    <Button on:click={toggleFC} class="start">
-      {isActive ? 'Стоп' : 'Старт'}
-    </Button>
+      <div class="select-field col">
+        <div class="label">Режим нагрузки</div>
+        <Select onChange={setLoadMode} options={loadModeOptions} />
+      </div>
+      <div class="load-mode col">
+        {#if selectedLoadMode.value}
+          <span class="label">Задать {selectedLoadMode.symbol}</span>
+          <RangeInput onChange={setLoadValue} />
+        {/if}
+      </div>
+    </div>
+    <div class="row">
+      {#each FCColumns as { pos }}
+        <div class="col o-{pos}">
+          <h3>БТЭ {pos}</h3>
+          <img src="../static/icons/valve.svg" alt="valve" class="icon-valve" />
+          <div class="fc-toggler">
+            <div class="label">
+              Клапан подачи H<sub>2</sub>
+            </div>
+            <Toggle on:change={toggleFC} name={pos} />
+          </div>
+        </div>
+      {/each}
+      <div class="col onoff">
+        <Button on:click={toggleAll} class="start">
+          {isActive ? 'Стоп' : 'Старт'}
+        </Button>
+      </div>
+    </div>
     <h2>Характеристики работы</h2>
-    <ul class="single">
-    	{#each FCColumns as FCColumn}
-    	  <h4>{FCColumn.title}</h4>
-    	  {#each FCColumn.characteristics as characteristic}
-    	    <li>
-    	      <span class="label">
-    	        {$data[characteristic].label}, {$data[characteristic].units}
-    	      </span>
-    	      <strong class="value">{$data[characteristic].value}</strong>
-    	    </li>
-    	  {/each}
-    	{/each}
-    </ul>
-    <ul class="common">
-    {#each commonCharacteristics as characteristic}
-      <li>
-        <span class="label">
-          {$data[characteristic].label}, {$data[characteristic].units}
-        </span>
-        <strong class="value">{$data[characteristic].value}</strong>
-      </li>
-    {/each}
-    </ul>
+    <div class="row">
+      {#each FCColumns as { pos, characteristics }}
+        <div class="col o-{pos}">
+          <h4>БТЭ {pos}</h4>
+          <ul class="single">
+            {#each characteristics as characteristic}
+              <li>
+                <span class="label">
+                  {@html $data[characteristic + pos].symbol}
+                  , {$data[characteristic + pos].units}
+                </span>
+                <strong class="value">
+                  {$data[characteristic + pos].value}
+                </strong>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {/each}
+      <div class="col">
+        <h4>Общие</h4>
+        <ul class="common">
+          {#each commonCharacteristics as characteristic}
+            <li>
+              <span class="label">
+                {@html $commonData[characteristic].symbol}, {$commonData[characteristic].units}
+              </span>
+              <strong class="value">{$commonData[characteristic].value}</strong>
+            </li>
+          {/each}
+        </ul>
+      </div>
+    </div>
   </main>
   <footer>
     <Button on:click={onPrev}>Назад</Button>

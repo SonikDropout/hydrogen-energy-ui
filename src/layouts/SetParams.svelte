@@ -2,15 +2,24 @@
   import { data } from "../stores";
   import RangeInput from "../molecules/RangeInput";
   import Button from "../atoms/Button";
+  import { CONSTRAINTS, COMMANDS } from "../constants";
+  import { ipcRenderer } from "electron";
   export let onNext;
 
   const columns = [{ pos: 1 }, { pos: 2 }];
 
-  function setFanPower() {}
+  function setFanPower(v, fc) {
+    console.log(fc);
+    ipcRenderer.send("serialCommand", COMMANDS['setFanPower' + fc](v))
+  }
 
-  function setBlowPeriod() {}
+  function setBlowPeriod(v, fc) {
+    ipcRenderer.send("serialCommand", COMMANDS["setBlowPeriod" + fc](v));
+  }
 
-  function setBlowDuration() {}
+  function setBlowDuration(v, fc) {
+    ipcRenderer.send("serialCommand", COMMANDS["setBlowDuration" + fc](v));
+  }
 </script>
 
 <style>
@@ -35,26 +44,29 @@
   }
   figure {
     grid-column: 1 / 2;
-    display: inline-block;
-    width: 33%;
-    vertical-align: middle;
+    text-align: center;
+    margin: 0;
   }
-  .label {
-    grid-column: span 2;
+  figure img {
+    height: 7.2rem;
   }
   .input-field {
-    display: inline-block;
-    width: 66%;
-    vertical-align: middle;
+    grid-column: span 2;
+  }
+  .label {
+    white-space: nowrap;
+  }
+  footer {
+    justify-content: center;
   }
 </style>
 
 <div class="layout">
   <header>Задание параметров работы батарей топливных элементов</header>
   <main>
-    {#each columns as col}
+    {#each columns as { pos }}
       <div class="col">
-        <h2>БТЭ {col.pos}</h2>
+        <h2>БТЭ {pos}</h2>
         <img
           src="../static/icons/fuelCell.svg"
           alt="fuelCell"
@@ -65,7 +77,11 @@
         </figure>
         <div class="input-field">
           <div class="label">Мощность вентилятора, % от макс</div>
-          <RangeInput onChange={setFanPower} />
+          <RangeInput
+            name={pos}
+            onChange={setFanPower}
+            range={CONSTRAINTS.fanPower}
+            defaultValue={$data['fanPower' + pos].value} />
         </div>
         <figure>
           <img src="../static/icons/valve.svg" alt="valve" />
@@ -73,9 +89,17 @@
         </figure>
         <div class="input-field">
           <div class="label">Периодичность продувки, сек</div>
-          <RangeInput onChange={setBlowPeriod} />
+          <RangeInput
+            name={pos}
+            onChange={setBlowPeriod}
+            range={CONSTRAINTS.blowPeriod}
+            defaultValue={$data['blowPeriod' + pos].value} />
           <div class="label">Длительность продувки, мсек</div>
-          <RangeInput onChange={setBlowDuration} />
+          <RangeInput
+            name={pos}
+            onChange={setBlowDuration}
+            range={CONSTRAINTS.blowDuration}
+            defaultValue={$data['blowDuration' + pos].value} />
         </div>
       </div>
     {/each}
