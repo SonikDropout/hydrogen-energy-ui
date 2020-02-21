@@ -1,8 +1,13 @@
 <script>
-  export let selected = { label: "-- не выбран --" };
   export let onChange;
   export let options;
   export let disabled;
+  export let defaultValue;
+  export let order = 0;
+
+  let selected = options.find(o => o.value === defaultValue) || {
+    label: "-- не выбрано --"
+  };
 
   let optionsVisible = false;
   const h = 100 * options.length;
@@ -23,21 +28,18 @@
 
   function selectOption(e) {
     optionsVisible = false;
-    onChange(e.target.dataset.value);
+    const v = e.target.dataset.value;
+    selected = options.find(o => o.value == v);
+    onChange(v);
   }
 </script>
 
 <style>
-  .select-box {
+  .select-wrapper {
+    position: relative;
     height: 3.2rem;
     line-height: 3.2rem;
     width: 100%;
-    display: flex;
-  }
-
-  .select-wrapper {
-    flex-grow: 1;
-    position: relative;
   }
 
   .select {
@@ -48,7 +50,6 @@
     border: 1px solid var(--corporate-blue-darken);
     border-radius: 4px;
     background-color: var(--bg-color);
-    z-index: 9999;
   }
 
   .select.disabled {
@@ -63,6 +64,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .curr-value::after {
@@ -83,7 +87,7 @@
 
   .curr-value,
   li {
-    padding: 0 2rem;
+    padding: 0 1rem;
     line-height: 3.2rem;
     cursor: pointer;
   }
@@ -99,29 +103,20 @@
   }
 </style>
 
-<div class="select-box">
-  <span>
-    <slot />
-  </span>
-  <div class="select-wrapper">
-    <div
-      class="select"
-      class:disabled
-      class:active
-      class:expand={optionsVisible}>
-      <div class="curr-value" on:click={toggleOptions}>{selected.label}</div>
-      {#if optionsVisible}
-        <ul transition:drop>
-          {#each options as { icon, label, value }}
-            <li data-value={value} on:click={selectOption}>
-              {#if icon}
-                <i class="icon icon-{icon}" />
-              {/if}
-              {label}
-            </li>
-          {/each}
-        </ul>
-      {/if}
-    </div>
+<div class="select-wrapper">
+  <div class="select" style="z-index:{100 - order}" class:disabled class:active class:expand={optionsVisible}>
+    <div class="curr-value" on:click={toggleOptions}>{selected.label}</div>
+    {#if optionsVisible}
+      <ul transition:drop>
+        {#each options as { icon, label, value }}
+          <li data-value={value} on:click={selectOption}>
+            {#if icon}
+              <i class="icon icon-{icon}" />
+            {/if}
+            {label}
+          </li>
+        {/each}
+      </ul>
+    {/if}
   </div>
 </div>

@@ -3,14 +3,13 @@
   export let disabled;
   export let onChange;
   export let name;
-  export let defaultValue = range[0];
 
   let step = 1;
 
-  $: value = defaultValue;
   $: min = Math.min.apply(null, range);
   $: max = Math.max.apply(null, range);
   $: diff = max - min;
+  $: value = range[0];
 
   $: {
     if (diff < 1) step = 0.01;
@@ -23,17 +22,14 @@
     showControls = false;
 
   function increment() {
-    console.log(name);
     if (value + step <= max) {
       value = +(value + step).toPrecision(3);
-      onChange(value, name);
     }
   }
 
   function decrement() {
     if (value - step >= min) {
       value = +(value - step).toPrecision(3);
-      onChange(value, name);
     }
   }
 
@@ -56,6 +52,7 @@
   function release() {
     if (timeout) clearTimeout(timeout);
     if (interval) clearInterval(interval);
+    onChange(value, name);
   }
 </script>
 
@@ -67,6 +64,7 @@
     height: 3.2rem;
     line-height: 3.2rem;
     display: flex;
+    overflow: hidden;
   }
   .input-wrapper.disabled {
     opacity: 0.6;
@@ -100,7 +98,7 @@
 
 <span class="input-wrapper" class:disabled>
   <button
-    disabled={value <= range[0] || disabled}
+    disabled={value <= min || disabled}
     class="decrementer"
     on:pointerdown={pressDecrement}
     on:pointerup={release}>
@@ -108,7 +106,7 @@
   </button>
   <span class="input">{value}</span>
   <button
-    disabled={value >= range[1] || disabled}
+    disabled={value >= max || disabled}
     class="incrementer"
     on:pointerdown={pressIncrement}
     on:pointerup={release}>

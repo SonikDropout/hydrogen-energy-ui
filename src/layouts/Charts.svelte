@@ -5,7 +5,7 @@
   import Select from "../molecules/Select";
   import Button from "../atoms/Button";
   import { ipcRenderer } from "electron";
-  export let onBack;
+  export let onPrev;
 
   ipcRenderer.send("usbStorageRequest");
   ipcRenderer.on("usbConnected", () => (saveDisabled = false));
@@ -32,7 +32,7 @@
     selectedY = yOptions[0],
     xPoints = [],
     yPoints = [],
-    saveDisabled,
+    saveDisabled = true,
     selectedSubject,
     fileName,
     isDrawing,
@@ -118,16 +118,43 @@
     display: flex;
     justify-content: space-evenly;
   }
-
+  .back,
   .selects {
-    max-width: 40rem;
+    max-width: 30rem;
+    flex: 1 1 30rem;
   }
+  .selects {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 0;
+  }
+  .save,
   main :global(.chart) {
-    max-width: 50rem;
+    max-width: 52rem;
+    flex: 1 1 52rem;
+  }
+  .save {
+    text-align: center;
   }
   .ct {
     text-transform: uppercase;
     font-weight: 500;
+    margin-bottom: auto;
+  }
+  .select-field {
+    margin: 1rem 0;
+    display: flex;
+  }
+  .select-label {
+    display: block;
+    min-width: 12rem;
+    flex: 1 1 12rem;
+    margin-right: 1rem;
+  }
+  main :global(button) {
+    margin-top: auto;
+    align-self: flex-start;
   }
 </style>
 
@@ -136,18 +163,18 @@
   <main>
     <div class="selects">
       <div class="label">Тип соединения</div>
-      <div class="ct">{CONNECTION_TYPES[$connectionType || 0]}</div>
+      <div class="ct">{CONNECTION_TYPES[$connectionType || 4]}</div>
       <div class="select-field">
-        <span class="label">Объект исследования</span>
-        <Select onChange={selectSubject} options={subjectOptions} />
+        <span class="select-label">Объект исследования</span>
+        <Select order={1} onChange={selectSubject} options={subjectOptions} />
       </div>
       <div class="select-field">
-        <span class="label">Ось X</span>
-        <Select onChange={selectX} options={xOptions} />
+        <span class="select-label">Ось X</span>
+        <Select order={2} onChange={selectX} options={xOptions}></Select>
       </div>
       <div class="select-field">
-        <span class="label">Ось Y</span>
-        <Select onChange={selectY} options={yOptions} />
+        <span class="select-label">Ось Y</span>
+        <Select order={3} onChange={selectY} options={yOptions} />
       </div>
 
       <Button on:click={toggleDrawing}>{isDrawing ? 'Стоп' : 'Старт'}</Button>
@@ -159,9 +186,13 @@
       {yPoints} />
   </main>
   <footer>
-    <Button on:click={onBack}>Назад</Button>
-    <Button on:click={saveFile} disabled={saveDisabled}>
-      Сохранить данные на USB-устройство
-    </Button>
+    <div class="back">
+      <Button on:click={onPrev}>Назад</Button>
+    </div>
+    <div class="save">
+      <Button on:click={saveFile} disabled={saveDisabled}>
+        Сохранить данные на USB-устройство
+      </Button>
+    </div>
   </footer>
 </div>

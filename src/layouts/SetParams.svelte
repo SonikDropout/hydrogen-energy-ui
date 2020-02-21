@@ -9,7 +9,6 @@
   const columns = [{ pos: 1 }, { pos: 2 }];
 
   function setFanPower(v, fc) {
-    console.log(fc);
     ipcRenderer.send("serialCommand", COMMANDS['setFanPower' + fc](v))
   }
 
@@ -88,13 +87,13 @@
           <figcaption>Продувочный клапан</figcaption>
         </figure>
         <div class="input-field">
-          <div class="label">Периодичность продувки, сек</div>
+          <div class="label">Периодичность продувки, с</div>
           <RangeInput
             name={pos}
             onChange={setBlowPeriod}
             range={CONSTRAINTS.blowPeriod}
             defaultValue={$data['blowPeriod' + pos].value} />
-          <div class="label">Длительность продувки, мсек</div>
+          <div class="label">Длительность продувки, мс</div>
           <RangeInput
             name={pos}
             onChange={setBlowDuration}

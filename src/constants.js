@@ -110,10 +110,10 @@ const COMMANDS = [
     switchConnectionType: (m) => [28, m],
     switchLoadMode: (m) => [32, m],
     setValue: (v) => [36, 10 * v],
-    setBlowDelay1: (v) => [40, (v / 10) | 0],
+    setBlowPeriod1: (v) => [40, (v / 10) | 0],
     setBlowDuration1: (v) => [44, (v / 10) | 0],
     setFanPower1: (v) => [48, v],
-    setBlowDelay2: (v) => [52, (v / 10) | 0],
+    setBlowPeriod2: (v) => [52, (v / 10) | 0],
     setBlowDuration2: (v) => [56, (v / 10) | 0],
     setFanPower2: (v) => [60, v],
   }
@@ -133,6 +133,7 @@ const CONNECTION_TYPES = [
   'Параллельное',
   'только БТЭ 1',
   'только БТЭ 2',
+  'не выбран',
 ];
 
 module.exports = {

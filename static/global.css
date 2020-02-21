@@ -61,8 +61,8 @@ header {
 .layout footer {
   height: 8rem;
   display: flex;
-  padding: 0 4rem;
   align-items: center;
+  justify-content: space-evenly;
 }
 
 h1,h2,h3,h4,h5,h6 {

@@ -51,8 +51,8 @@
   ];
   const loadModeOptions = [
     { label: "внутр нагрузка отключена", value: 0 },
-    { label: "постоянный ток", value: 1, symbol: "U" },
-    { label: "постоянное напряжение", value: 2, symbol: "I" },
+    { label: "постоянный ток", value: 1, symbol: "I" },
+    { label: "постоянное напряжение", value: 2, symbol: "U" },
     { label: "постоянная мощность", value: 3, symbol: "P" }
   ];
 
@@ -71,7 +71,7 @@
   }
   function toggleFC(e) {
     ipcRenderer.send(
-      "serialCommands",
+      "serialCommand",
       COMMANDS[(e.target.checked ? "open" : "close") + "Valve" + e.target.name]
     );
   }
@@ -88,8 +88,8 @@
     justify-content: space-evenly;
   }
   .col {
-    flex: 1 1 30rem;
-    max-width: 30rem;
+    flex: 1 1 27rem;
+    max-width: 27rem;
   }
   .col.o-2 {
     order: 2;
@@ -118,6 +118,12 @@
   .fc-toggler {
     display: inline-block;
     vertical-align: middle;
+  }
+  footer {
+    padding: 0;
+  }
+  footer .col:nth-child(2) {
+    text-align: center;
   }
 </style>
 
@@ -194,8 +200,13 @@
       </div>
     </div>
   </main>
-  <footer>
-    <Button on:click={onPrev}>Назад</Button>
-    <Button on:click={onNext}>Построение графиков</Button>
+  <footer class="row">
+    <div class="col">
+      <Button on:click={onPrev}>Назад</Button>
+    </div>
+    <div class="col">
+      <Button on:click={onNext}>Построение графиков</Button>
+    </div>
+    <div class="col"></div>
   </footer>
 </div>
