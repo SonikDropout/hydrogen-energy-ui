@@ -1,29 +1,62 @@
 const Serial = require('serialport');
-const { PORT } = require('../constants');
+const { PORT, SEPARATORS } = require('../constants');
 const parse = require('./parser');
 
 const serial = new Serial(PORT.name, { baudRate: PORT.baudRate });
 
-function subscribe(fn) {
-  serial.on('data', (buf) => {
-    try {
-      fn(parse(buf));
-    } catch (e) {
-      // pass invalid buffer
-    }
-  });
+serial.on('data', handleData);
+
+const subscribers = [];
+const buffer = Buffer.alloc(50);
+let offset = 0;
+
+function handleData(buf) {
+  idx = buf.indexOf(SEPARATORS);
+  if (idx != -1) {
+    buf.copy(buffer, offset, 0, idx);
+    subscribers.forEach(fn => fn(parse(buffer.slice())));
+    offset = 0;
+    buf.copy(buffer, offset, idx);
+    offset = buf.length;
+  } else {
+    buf.copy(buffer, offset)
+    offset += buf.length;
+  }
 }
+
+function subscribe(fn) {
+  subscribers.push(fn);
+}
+
+let commandQueue = [];
+let portBusy = false;
 
 function sendCommand(bytes) {
   let [byte1, byte2] = isNaN(bytes) ? bytes : [bytes, 0];
-  serial.write(Buffer.from([30, byte1, byte2, byte1 + byte2 + 30]));
+  commandQueue.push(Buffer.from([30, byte1, byte2, byte1 + byte2 + 30]));
+  if (!portBusy) {
+    portBusy = true;
+    writeCommandFromQueue();
+  }
+}
+
+function writeCommandFromQueue() {
+  if (!commandQueue.length) {
+    portBusy = false;
+    return;
+  }
+  const cmd = commandQueue.shift();
+  serial.write(cmd);
   serial.once('data', (buf) => {
-    if (buf[0] != 231) sendCommand(bytes);
+    if (!buf.toString('ascii').startsWith('ok')) {
+      commandQueue.unshift(cmd);
+      writeCommandFromQueue();
+    }
   });
 }
 
 module.exports = {
   subscribe,
   sendCommand,
-  unsubscribeAll: serial.removeAllListeners
+  unsubscribeAll: serial.removeAllListeners,
 };
