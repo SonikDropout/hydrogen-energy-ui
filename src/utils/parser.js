@@ -12,7 +12,7 @@ const data = {
     symbol: 'P',
     units: 'Вт',
   },
-  power1: {
+  power2: {
     symbol: 'P',
     units: 'Вт',
   }
@@ -28,7 +28,8 @@ module.exports = function parse(buf) {
   for (const key in STATE_DATA) {
     data[key] = buf[i++];
   }
-  for (const pos in [1, 2]) {
+  for (const pos of [1, 2]) {
+    debugger;
     data['power' + pos].value = data['current' + pos].value * data['voltage' + pos].value;
   }
   return data;

@@ -18,7 +18,7 @@ function handleData(buf) {
     try {
       subscribers.forEach(fn => fn(parse(buffer.slice())));
     } catch (e) {
-      console.error('There is a hole in your logic!');
+      console.error('There is a hole in your logic:', e);
     }
     offset = 0;
     buf.copy(buffer, offset, idx);
