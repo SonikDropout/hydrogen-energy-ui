@@ -25,7 +25,6 @@ usbDetect.on('remove', handleRemove);
 function findDrive() {
   driveList.list().then((drives) => {
     const drive = drives.find(isSuitableDrive);
-    console.log(drive);
     if (drive) {
       connectedDevice = drive.device;
       usbPort.emit('add', drive.mountpoints[0].path);
