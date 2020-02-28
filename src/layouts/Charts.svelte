@@ -1,6 +1,6 @@
 <script>
   import Chart from '../organisms/Chart';
-  import { data, systemState, commonData } from '../stores';
+  import { data, commonData } from '../stores';
   import { CONNECTION_TYPES } from '../constants';
   import Select from '../molecules/Select';
   import Button from '../atoms/Button';
@@ -9,6 +9,7 @@
 
   ipcRenderer.send('usbStorageRequest');
   ipcRenderer.on('usbConnected', () => (saveDisabled = false));
+  ipcRenderer.on('usbDisonnected', () => (saveDisabled = true));
 
   const subjectOptions = [
     { label: 'БТЭ 1', value: 1 },
@@ -118,7 +119,7 @@
   <main>
     <div class="selects">
       <div class="label">Тип соединения</div>
-      <div class="ct">{CONNECTION_TYPES[$systemState.connectionType]}</div>
+      <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
       <div class="select-field">
         <span class="select-label">Объект исследования</span>
         <Select order={1} onChange={selectSubject} options={subjectOptions} />

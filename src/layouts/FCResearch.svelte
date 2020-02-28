@@ -4,13 +4,13 @@
   import Toggle from '../atoms/Toggle';
   import RangeInput from '../molecules/RangeInput';
   import Warnings from '../molecules/Warnings';
-  import { data, commonData, systemState } from '../stores';
+  import { data, commonData } from '../stores';
   import { COMMANDS } from '../constants';
   import { ipcRenderer } from 'electron';
   export let onPrev;
   export let onNext;
 
-  $: isActive = $systemState.onoff;
+  $: isActive = $data.onoff;
 
   const characteristics = [
     'voltage',
@@ -91,14 +91,14 @@
         <Select
           onChange={setConnectionType}
           options={connectionTypeOptions}
-          defaultValue={$systemState.connectionType} />
+          defaultValue={$data.connectionType} />
       </div>
       <div class="select-field col">
         <div class="label">Режим нагрузки</div>
         <Select
           onChange={setLoadMode}
           options={loadModeOptions}
-          defaultSelected={$systemState.loadMode} />
+          defaultSelected={$data.loadMode} />
       </div>
       <div class="load-mode col">
         {#if selectedLoadMode.value}
@@ -121,7 +121,7 @@
               on:change={toggleFC}
               name={pos}
               disabled={!isActive}
-              checked={$systemState['valve' + pos]} />
+              checked={$data['valve' + pos]} />
           </div>
         </div>
       {/each}

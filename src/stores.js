@@ -1,6 +1,8 @@
 const { writable, derived } = require('svelte/store');
 const { clone } = require('./utils/others');
 const { DATA, COMMON_DATA, STATE_DATA } = require('./constants');
+const { ipcRenderer } = require('electron');
+
 
 const initialData = clone(DATA);
 
@@ -19,7 +21,7 @@ const connectionType = writable();
 
 const summed = ['current', 'voltage', 'power', 'consumption'];
 
-const commonData = derived(data, ($data) => {
+const commonData = derived(data, $data => {
   const d = {};
   for (const key in COMMON_DATA) d[key] = { ...$data[key] };
   for (let i = 0; i < summed.length; ++i) {
@@ -31,11 +33,10 @@ const commonData = derived(data, ($data) => {
   return d;
 });
 
-const systemState = writable(clone(STATE_DATA));
+ipcRenderer.on('serialData', (d) => data.set(d))
 
 module.exports = {
   data,
   connectionType,
   commonData,
-  systemState,
 };
