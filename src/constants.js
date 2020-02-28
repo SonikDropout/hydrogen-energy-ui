@@ -1,7 +1,10 @@
 const { mergeRename } = require('./utils/others');
 
 const IS_RPI = process.platform === 'linux' && process.arch == 'arm';
-const PORT = IS_RPI ? '/dev/ttyAMA0' : 'COM5';
+const PORT = {
+  name: '/dev/ttyS0',
+  baudRate: 230400,
+};
 const SEPARATORS = Buffer.alloc(4);
 SEPARATORS.writeUInt16BE(6891);
 SEPARATORS.writeUInt16BE(25500, 2);

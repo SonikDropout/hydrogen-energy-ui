@@ -37,7 +37,7 @@ module.exports = {
   externals: [
     function(context, request, callback) {
       if (
-        /^path|fs|events|electron|drivelist|excel4node|usb-detection$/.test(
+        /^path|fs|events|serialport|electron|drivelist|excel4node|usb-detection$/.test(
           request
         )
       ) {

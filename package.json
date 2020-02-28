@@ -30,6 +30,7 @@
   "dependencies": {
     "drivelist": "^8.0.9",
     "excel4node": "^1.7.2",
+    "serialport": "^8.0.7",
     "usb-detection": "^4.7.0"
   }
 }

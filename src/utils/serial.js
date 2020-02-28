@@ -14,7 +14,11 @@ function handleData(buf) {
   idx = buf.indexOf(SEPARATORS);
   if (idx != -1) {
     buf.copy(buffer, offset, 0, idx);
-    subscribers.forEach(fn => fn(parse(buffer.slice())));
+    try {
+      subscribers.forEach(fn => fn(parse(buffer.slice())));
+    } catch (e) {
+      console.error('There is a hole in your logic!');
+    }
     offset = 0;
     buf.copy(buffer, offset, idx);
     offset = buf.length;
@@ -58,5 +62,5 @@ function writeCommandFromQueue() {
 module.exports = {
   subscribe,
   sendCommand,
-  unsubscribeAll: serial.removeAllListeners,
+  unsubscribeAll: serial.close,
 };
