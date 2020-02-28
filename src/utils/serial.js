@@ -11,6 +11,7 @@ const buffer = Buffer.alloc(50);
 let offset = 0;
 
 function handleData(buf) {
+  if (buf.toString('ascii').startsWith('ok')) buf = buf.slice(2);
   idx = buf.indexOf(SEPARATORS);
   if (idx != -1) {
     buf.copy(buffer, offset, 0, idx);
@@ -19,7 +20,7 @@ function handleData(buf) {
     buf.copy(buffer, offset, idx);
     offset = buf.length;
   } else {
-    buf.copy(buffer, offset)
+    buf.copy(buffer, offset);
     offset += buf.length;
   }
 }
@@ -47,7 +48,7 @@ function writeCommandFromQueue() {
   }
   const cmd = commandQueue.shift();
   serial.write(cmd);
-  serial.once('data', (buf) => {
+  serial.once('data', buf => {
     if (!buf.toString('ascii').startsWith('ok')) {
       commandQueue.unshift(cmd);
       writeCommandFromQueue();

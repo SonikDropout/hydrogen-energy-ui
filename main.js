@@ -25,7 +25,7 @@ function reloadOnChange(win) {
 }
 
 function initPeripherals(win) {
-  const serial = require(isPi ? './src/utils/serial' : './src/utils/dataGenerator');
+  const serial = require(`./src/utils/${isPi ? 'serial' : 'dataGenerator'}`);
   usbPort.on('add', (path) => {
     usbPath = path;
     win.webContents.send('usbConnected');

@@ -28,7 +28,6 @@ const commonData = derived(data, ($data) => {
     d[key].value = $data[key + 1].value + $data[key + 2].value;
     d[key].symbol = d[key].symbol + '<sub>&#x2211;</sub>';
   }
-  console.log(d);
   return d;
 });
 

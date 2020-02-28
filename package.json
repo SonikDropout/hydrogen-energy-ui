@@ -31,5 +31,10 @@
     "drivelist": "^8.0.9",
     "excel4node": "^1.7.2",
     "usb-detection": "^4.7.0"
+  },
+  "prettier": {
+    "svelteSortOrder" : "scripts-markup-styles",
+    "singleQuote": true,
+    "trailingComma": "es5"
   }
 }
