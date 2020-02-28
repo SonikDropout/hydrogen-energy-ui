@@ -96,7 +96,7 @@ const BOTH_DATA = mergeRename([SINGLE_DATA, SINGLE_DATA], [1, 2]);
 
 const DATA = {
   ...BOTH_DATA,
-  ...STATE_DATA,
+  ...COMMON_DATA,
 };
 
 const COMMANDS = [

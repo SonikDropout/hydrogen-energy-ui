@@ -6,19 +6,30 @@ function validate(buffer) {
     throw new Error('Invalid buffer recieved');
 }
 
+const data = {
+  ...clone(DATA),
+  power1: {
+    symbol: 'P',
+    units: 'Вт',
+  },
+  power1: {
+    symbol: 'P',
+    units: 'Вт',
+  }
+}
+
 module.exports = function parse(buf) {
   validate(buf);
-  const result = {
-    ...clone(DATA),
-    ...clone(STATE_DATA),
-  }
   let i = SEPARATORS.length;
   for (const key in DATA) {
-    result[key].value = buf.readUInt16BE(i++ * 2);
+    data[key].value = buf.readUInt16BE(i++ * 2);
   }
   i *= 2;
   for (const key in STATE_DATA) {
-    result[key] = buf[i++];
+    data[key] = buf[i++];
   }
-  return result;
+  for (const pos in [1, 2]) {
+    data['power' + pos].value = data['current' + pos].value * data['voltage' + pos].value;
+  }
+  return data;
 };
