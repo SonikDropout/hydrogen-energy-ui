@@ -5,12 +5,14 @@
   import RangeInput from '../molecules/RangeInput';
   import Warnings from '../molecules/Warnings';
   import { data, commonData } from '../stores';
-  import { COMMANDS } from '../constants';
+  import { COMMANDS, CONSTRAINTS } from '../constants';
   import { ipcRenderer } from 'electron';
   export let onPrev;
   export let onNext;
 
-  $: isActive = $data.onoff;
+  let isActive = $data.onoff;
+
+  const valves = [$data.valve1, $data.valve2];
 
   const characteristics = [
     'voltage',
@@ -51,12 +53,12 @@
   ];
   const loadModeOptions = [
     { label: 'внутр нагрузка отключена', value: 0 },
-    { label: 'постоянный ток', value: 1, symbol: 'I' },
-    { label: 'постоянное напряжение', value: 2, symbol: 'U' },
-    { label: 'постоянная мощность', value: 3, symbol: 'P' },
+    { label: 'постоянный ток', name: 'current', value: 1, symbol: 'I' },
+    { label: 'постоянное напряжение', name: 'voltage', value: 2, symbol: 'U' },
+    { label: 'постоянная мощность', name: 'power', value: 3, symbol: 'P' },
   ];
 
-  let selectedLoadMode = loadModeOptions[0];
+  let selectedLoadMode = loadModeOptions[$data.loadMode];
 
   function setConnectionType(t) {
     connectionType.set(+t);
@@ -70,14 +72,18 @@
     ipcRenderer.send('serialCommand', COMMANDS.setValue(+v));
   }
   function toggleFC(e) {
+    const { name, checked } = e.target;
+    valves[name - 1] = checked;
     ipcRenderer.send(
       'serialCommand',
-      COMMANDS[(e.target.checked ? 'open' : 'close') + 'Valve' + e.target.name]
+      COMMANDS[(checked ? 'open' : 'close') + 'Valve' + name]
     );
   }
 
   function toggleAll() {
     isActive = !isActive;
+    valves[0] = false;
+    valves[1] = false;
     ipcRenderer.send('serialCommand', COMMANDS[isActive ? 'start' : 'stop']);
   }
 </script>
@@ -98,12 +104,15 @@
         <Select
           onChange={setLoadMode}
           options={loadModeOptions}
-          defaultSelected={$data.loadMode} />
+          defaultValue={$data.loadMode} />
       </div>
       <div class="load-mode col">
         {#if selectedLoadMode.value}
           <span class="label">Задать {selectedLoadMode.symbol}</span>
-          <RangeInput onChange={setLoadValue} />
+          <RangeInput
+            onChange={setLoadValue}
+            defaultValue={$data.loadValue.value}
+            range={CONSTRAINTS[selectedLoadMode.name]} />
         {/if}
       </div>
     </div>
@@ -121,7 +130,7 @@
               on:change={toggleFC}
               name={pos}
               disabled={!isActive}
-              checked={$data['valve' + pos]} />
+              checked={valves[pos - 1]} />
           </div>
         </div>
       {/each}
@@ -194,7 +203,10 @@
     margin: 0 auto;
     padding: 0;
     list-style: none;
-    width: 17rem;
+    width: 18rem;
+  }
+  li {
+    white-space: nowrap;
   }
   span.label {
     display: inline-block;

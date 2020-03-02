@@ -1,4 +1,4 @@
-const { SEPARATORS, DATA, STATE_DATA } = require('../constants');
+const { SEPARATORS, FC_DATA, STATE_DATA } = require('../constants');
 const { clone } = require('./others');
 
 function validate(buffer) {
@@ -7,7 +7,7 @@ function validate(buffer) {
 }
 
 const data = {
-  ...clone(DATA),
+  ...clone(FC_DATA),
   power1: {
     symbol: 'P',
     units: 'Вт',
@@ -20,11 +20,11 @@ const data = {
 
 module.exports = function parse(buf) {
   validate(buf);
-  let i = SEPARATORS.length / 2 & 1;
-  for (const key in DATA) {
-    data[key].value = +(buf.readUInt16BE(i++ * 2) / (data[key].divider || 1)).toPrecision(4);
+  let i = SEPARATORS.length;
+  for (const key in FC_DATA) {
+    data[key].value = +(buf.readUInt16BE(i) / (data[key].divider || 1)).toPrecision(4);
+    i += 2;
   }
-  i *= 2;
   for (const key in STATE_DATA) {
     data[key] = buf[i++];
   }

@@ -3,21 +3,21 @@
   export let disabled;
   export let onChange;
   export let name;
+  export let defaultValue = range[0];
 
   let step = 1;
 
   $: min = Math.min.apply(null, range);
   $: max = Math.max.apply(null, range);
   $: diff = max - min;
-  $: value = range[0];
+  $: value = Math.min(Math.max(defaultValue, range[0]), range[1]);
 
   $: {
     if (diff < 1) step = 0.01;
     if (diff < 10) step = 0.1;
   }
 
-  let input = { value: range[0] },
-    timeout,
+  let timeout,
     interval,
     showControls = false;
 
@@ -55,6 +55,24 @@
     onChange(value, name);
   }
 </script>
+
+<span class="input-wrapper" class:disabled>
+  <button
+    disabled={value <= min || disabled}
+    class="decrementer"
+    on:pointerdown={pressDecrement}
+    on:pointerup={release}>
+    <span>-</span>
+  </button>
+  <span class="input">{value}</span>
+  <button
+    disabled={value >= max || disabled}
+    class="incrementer"
+    on:pointerdown={pressIncrement}
+    on:pointerup={release}>
+    <span>+</span>
+  </button>
+</span>
 
 <style>
   .input-wrapper {
@@ -95,21 +113,3 @@
     opacity: 0.5;
   }
 </style>
-
-<span class="input-wrapper" class:disabled>
-  <button
-    disabled={value <= min || disabled}
-    class="decrementer"
-    on:pointerdown={pressDecrement}
-    on:pointerup={release}>
-    <span>-</span>
-  </button>
-  <span class="input">{value}</span>
-  <button
-    disabled={value >= max || disabled}
-    class="incrementer"
-    on:pointerdown={pressIncrement}
-    on:pointerup={release}>
-    <span>+</span>
-  </button>
-</span>

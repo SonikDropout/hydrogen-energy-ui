@@ -1,9 +1,9 @@
 const { writable, derived } = require('svelte/store');
 const { clone } = require('./utils/others');
-const { DATA, COMMON_DATA, STATE_DATA } = require('./constants');
+const { FC_DATA, COMMON_DATA, STATE_DATA } = require('./constants');
 const { ipcRenderer } = require('electron');
 
-const initialData = clone(DATA);
+const initialData = clone(FC_DATA);
 
 for (let key in initialData) initialData[key].value = 0;
 for (let key in STATE_DATA) initialData[key] = 0;

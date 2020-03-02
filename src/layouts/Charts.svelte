@@ -140,11 +140,16 @@
       <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
       <div class="select-field">
         <span class="select-label">Объект исследования</span>
-        <Select order={1} onChange={selectSubject} options={subjectOptions} />
+        <Select
+          order={1}
+          onChange={selectSubject}
+          options={subjectOptions}
+          disabled={isDrawing} />
       </div>
       <div class="select-field">
         <span class="select-label">Ось X</span>
         <Select
+          disabled={isDrawing}
           order={2}
           onChange={selectX}
           options={xOptions}
@@ -153,6 +158,7 @@
       <div class="select-field">
         <span class="select-label">Ось Y</span>
         <Select
+          disabled={isDrawing}
           order={3}
           onChange={selectY}
           options={yOptions}

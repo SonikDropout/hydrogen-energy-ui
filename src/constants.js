@@ -68,6 +68,9 @@ const COMMON_DATA = {
     units: 'А',
     divider: 1000,
   },
+  loadValue: {
+    divider: 1000,
+  },
   consumption1: {
     symbol: 'Q',
     units: 'мл/мин',
@@ -94,16 +97,16 @@ const STATE_DATA = {
 
 const BOTH_DATA = mergeRename([SINGLE_DATA, SINGLE_DATA], [1, 2]);
 
-const DATA = {
+const FC_DATA = {
   ...BOTH_DATA,
   ...COMMON_DATA,
 };
 
 const COMMANDS = [
-  'openValve1',
   'closeValve1',
-  'openValve2',
+  'openValve1',
   'closeValve2',
+  'openValve2',
   'start',
   'stop',
 ].reduce(
@@ -112,15 +115,15 @@ const COMMANDS = [
     return a;
   },
   {
-    switchConnectionType: (m) => [28, m],
-    switchLoadMode: (m) => [32, m],
-    setValue: (v) => [36, 10 * v],
-    setBlowPeriod1: (v) => [40, (v / 10) | 0],
-    setBlowDuration1: (v) => [44, (v / 10) | 0],
-    setFanPower1: (v) => [48, v],
-    setBlowPeriod2: (v) => [52, (v / 10) | 0],
-    setBlowDuration2: (v) => [56, (v / 10) | 0],
-    setFanPower2: (v) => [60, v],
+    switchConnectionType: m => [28, m],
+    switchLoadMode: m => [32, m],
+    setValue: v => [36, 10 * v],
+    setBlowPeriod1: v => [40, (v / 10) | 0],
+    setBlowDuration1: v => [44, (v / 10) | 0],
+    setFanPower1: v => [48, v],
+    setBlowPeriod2: v => [52, (v / 10) | 0],
+    setBlowDuration2: v => [56, (v / 10) | 0],
+    setFanPower2: v => [60, v],
   }
 );
 
@@ -147,7 +150,7 @@ module.exports = {
   SEPARATORS,
   STATES,
   LOW_PRESSURE,
-  DATA,
+  FC_DATA,
   COMMON_DATA,
   STATE_DATA,
   CONSTRAINTS,

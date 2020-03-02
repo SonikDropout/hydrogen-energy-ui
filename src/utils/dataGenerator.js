@@ -1,4 +1,4 @@
-const { DATA, STATE_DATA } = require('../constants');
+const { FC_DATA, STATE_DATA } = require('../constants');
 const { clone } = require('./others');
 
 function randInt(min, max) {
@@ -23,10 +23,10 @@ function sendData() {
 
 function randomData() {
   const d = {
-    ...clone(DATA),
+    ...clone(FC_DATA),
     ...clone(STATE_DATA),
   };
-  for (const key in DATA) {
+  for (const key in FC_DATA) {
     d[key].value = randInt(10);
   }
   for (const key in STATE_DATA) {

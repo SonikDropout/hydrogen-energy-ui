@@ -7,7 +7,7 @@ const serial = new Serial(PORT.name, { baudRate: PORT.baudRate });
 serial.on('data', handleData);
 
 let subscribers = [];
-const buffer = Buffer.alloc(50);
+const buffer = Buffer.alloc(52);
 let offset = 0;
 
 function handleData(buf) {
@@ -18,7 +18,7 @@ function handleData(buf) {
     try {
       subscribers.forEach(fn => fn(parse(buffer.slice())));
     } catch (e) {
-      console.error('There is a hole in your logic:', e);
+      // pass invalid buffer
     }
     offset = 0;
     buf.copy(buffer, offset, idx);
@@ -51,12 +51,14 @@ function writeCommandFromQueue() {
     return;
   }
   const cmd = commandQueue.shift();
+  console.log('Sending Command to COM', cmd);
   serial.write(cmd);
   serial.once('data', buf => {
+    console.log('Recived confirm:', buf.toString('ascii'));
     if (!buf.toString('ascii').startsWith('ok')) {
       commandQueue.unshift(cmd);
-      writeCommandFromQueue();
     }
+    writeCommandFromQueue();
   });
 }
 
