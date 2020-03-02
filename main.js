@@ -11,7 +11,7 @@ let win, usbPath;
 const mode = process.env.NODE_ENV;
 
 function reloadOnChange(win) {
-  if (mode !== 'development' && mode !== 'test') return { close: () => {} };
+  if (mode !== 'development') return { close: () => {} };
 
   const watcher = require('chokidar').watch(path.join(__dirname, 'dist', '**'), {
     ignoreInitial: true,
@@ -25,12 +25,11 @@ function reloadOnChange(win) {
 }
 
 function initPeripherals(win) {
-  const serial = require(`./src/utils/${isPi ? 'serial' : 'dataGenerator'}`);
+  const serial = require(`./src/utils/serial`);
   usbPort.on('add', (path) => {
     usbPath = path;
     win.webContents.send('usbConnected');
-  });
-  usbPort.on('remove', () => {
+  }).on('remove', () => {
     usbPath = void 0;
     win.webContents.send('usbDisconnected');
   });

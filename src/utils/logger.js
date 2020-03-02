@@ -1,22 +1,33 @@
-const xl = require("excel4node");
-const path = require("path");
+const { Workbook } = require('excel4node');
+const path = require('path');
 
-let wb, ws, fileName, headerStyle, dataStyle;
+let wb,
+  ws,
+  fileName,
+  headerStyle,
+  dataStyle,
+  row = 1;
 
 function createFile(fileName, headers) {
   fileName = fileName;
-  wb = new xl.wb();
-  ws = wb.addWorksheet("Результаты");
+  wb = new Workbook();
+  ws = wb.addWorksheet('Результаты');
   if (!headerStyle) createStyles();
   for (let i = 0; i < headers.length; i++) {
-    ws.cell(1, i + 1).string(headers[i]).style(headerStyle);
+    ws.cell(row, i + 1)
+      .string(headers[i])
+      .style(headerStyle);
   }
+  row++;
 }
 
 function writeRow(entries) {
   for (let i = 0; i < entries.length; i++) {
-    ws.cell(row, i+1).number(entries[i]).style(dataStyle)
+    ws.cell(row, i + 1)
+      .number(entries[i])
+      .style(dataStyle);
   }
+  row++;
 }
 
 function saveFile(dir) {
@@ -28,29 +39,29 @@ function createStyles() {
   headerStyle = wb.createStyle({
     font: {
       bold: true,
-      color: "ffffff"
+      color: 'ffffff',
     },
     fill: {
-      type: "pattern",
-      patternType: "solid",
-      fgColor: "8bc041"
-    }
+      type: 'pattern',
+      patternType: 'solid',
+      fgColor: '8bc041',
+    },
   });
   headerStyle.border = generateBorders();
   dataStyle = wb.createStyle({
     alignment: {
-      horizontal: "right"
-    }
+      horizontal: 'right',
+    },
   });
-  dataStyle.border = _generateBorders();
+  dataStyle.border = generateBorders();
 }
 
 function generateBorders() {
-  return ["left", "right", "top", "bottom"].reduce(
+  return ['left', 'right', 'top', 'bottom'].reduce(
     (acc, key) => {
       acc[key] = {
-        style: "thin",
-        color: "black"
+        style: 'thin',
+        color: 'black',
       };
       return acc;
     },
@@ -61,6 +72,5 @@ function generateBorders() {
 module.exports = {
   writeRow,
   createFile,
-  saveFile
+  saveFile,
 };
-

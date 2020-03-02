@@ -1,15 +1,26 @@
 <script>
-  import Chart from '../organisms/Chart';
   import { data, commonData } from '../stores';
   import { CONNECTION_TYPES } from '../constants';
   import Select from '../molecules/Select';
   import Button from '../atoms/Button';
   import { ipcRenderer } from 'electron';
+  import Chart from 'chart.js';
+  import zoom from 'chartjs-plugin-zoom';
+  import configureChart from './chart.config';
+  import { onMount } from 'svelte';
   export let onPrev;
+
+  onMount(() => {
+    chart = new Chart(
+      document.getElementById('chart').getContext('2d'),
+      configureChart(points, { x: selectedX.symbol, y: selectedY.symbol })
+    );
+    chart.options.onClick = chart.resetZoom;
+  });
 
   ipcRenderer.send('usbStorageRequest');
   ipcRenderer.on('usbConnected', () => (saveDisabled = false));
-  ipcRenderer.on('usbDisonnected', () => (saveDisabled = true));
+  ipcRenderer.on('usbDisconnected', () => (saveDisabled = true));
 
   const subjectOptions = [
     { label: 'БТЭ 1', value: 1 },
@@ -31,14 +42,15 @@
 
   let selectedX = xOptions[0],
     selectedY = yOptions[0],
-    xPoints = [],
-    yPoints = [],
+    points = [],
     saveDisabled = true,
     selectedSubject,
-    fileName,
     isDrawing,
     unsubscribeData,
+    chart,
     timeStart;
+
+  $: startDisabled = !selectedSubject;
 
   function selectSubject(v) {
     selectedSubject = subjectOptions.find(s => s.value == v);
@@ -46,15 +58,19 @@
 
   function selectY(n) {
     selectedY = yOptions[n];
+    chart.options.scales.yAxes[0].scaleLabel.labelString = selectedY.symbol;
+    chart.update();
   }
 
   function selectX(n) {
     selectedX = xOptions[n];
+    chart.options.scales.xAxes[0].scaleLabel.labelString = selectedX.symbol;
+    chart.update();
   }
 
   function toggleDrawing() {
     if (isDrawing) {
-      unsubsribeData();
+      unsubscribeData();
       stopDrawing();
     } else {
       startLogging();
@@ -64,13 +80,13 @@
   }
 
   function startLogging() {
-    fileName = selectedX.label + '-' + selectedY.label;
-    ipcRenderer.send('startFileWrite', fileName);
+    const fileName = selectedX.label + '-' + selectedY.label;
+    const headers = [selectedX.symbol, selectedY.symbol];
+    ipcRenderer.send('startFileWrite', fileName, headers);
   }
 
   function stopDrawing() {
-    xPoints = [];
-    yPoints = [];
+    points = [];
   }
 
   function subscribeData() {
@@ -78,13 +94,13 @@
     if (selectedSubject.value == 'common') {
       unsubscribeData = commonData.subscirbe(d => {
         const row = getEntries(d);
-        sendToLogger(row);
+        sendToLogger(Object.values(row));
         updateChart(row);
       });
     } else {
       unsubscribeData = data.subscribe(d => {
         const row = getEntries(d, true);
-        sendToLogger(row);
+        sendToLogger(Object.values(row));
         updateChart(row);
       });
     }
@@ -94,15 +110,17 @@
     const x =
       selectedX.name == 'time'
         ? (Date.now() - timeStart) / 1000
-        : data[selectedX.name + withPostfix ? selectSubject.name : ''].value;
+        : data[selectedX.name + (withPostfix ? selectedSubject.value : '')]
+            .value;
     const y =
-      data[selectedY.name + withPostfix ? selectedSubject.name : ''].value;
-    return [x, y];
+      data[selectedY.name + (withPostfix ? selectedSubject.value : '')].value;
+    return { x, y };
   }
 
-  function updateChart([x, y]) {
-    xPoints.concat(x);
-    yPoints.concat(y);
+  function updateChart(p) {
+    points.push(p);
+    chart.data.datasets[0].data = points;
+    chart.update();
   }
 
   function sendToLogger(row) {
@@ -110,7 +128,7 @@
   }
 
   function saveFile() {
-    ipcRenderer.send('saveFile', fileName);
+    ipcRenderer.send('saveFile');
   }
 </script>
 
@@ -126,20 +144,28 @@
       </div>
       <div class="select-field">
         <span class="select-label">Ось X</span>
-        <Select order={2} onChange={selectX} options={xOptions} />
+        <Select
+          order={2}
+          onChange={selectX}
+          options={xOptions}
+          defaultValue={selectedX.value} />
       </div>
       <div class="select-field">
         <span class="select-label">Ось Y</span>
-        <Select order={3} onChange={selectY} options={yOptions} />
+        <Select
+          order={3}
+          onChange={selectY}
+          options={yOptions}
+          defaultValue={selectedY.value} />
       </div>
 
-      <Button on:click={toggleDrawing}>{isDrawing ? 'Стоп' : 'Старт'}</Button>
+      <Button on:click={toggleDrawing} disabled={startDisabled}>
+        {isDrawing ? 'Стоп' : 'Старт'}
+      </Button>
     </div>
-    <Chart
-      xCaption={selectedX.symbol}
-      yCaption={selectedY.symbol}
-      {xPoints}
-      {yPoints} />
+    <div class="chart">
+      <canvas id="chart" height="400" width="520" />
+    </div>
   </main>
   <footer>
     <div class="back">
@@ -170,7 +196,7 @@
     padding: 4rem 0;
   }
   .save,
-  main :global(.chart) {
+  .chart {
     max-width: 52rem;
     flex: 1 1 52rem;
   }

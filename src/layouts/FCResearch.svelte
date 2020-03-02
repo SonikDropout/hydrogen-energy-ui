@@ -194,7 +194,7 @@
     margin: 0 auto;
     padding: 0;
     list-style: none;
-    width: 15rem;
+    width: 17rem;
   }
   span.label {
     display: inline-block;
