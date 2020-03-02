@@ -33,7 +33,7 @@ const commonData = derived(data, $data => {
   return d;
 });
 
-ipcRenderer.on('serialData', (d) => data.set(d))
+ipcRenderer.on('serialData', (d) => {data.set(d); console.log(d);})
 
 module.exports = {
   data,

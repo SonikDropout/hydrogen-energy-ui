@@ -6,7 +6,7 @@ const serial = new Serial(PORT.name, { baudRate: PORT.baudRate });
 
 serial.on('data', handleData);
 
-const subscribers = [];
+let subscribers = [];
 const buffer = Buffer.alloc(50);
 let offset = 0;
 
@@ -60,8 +60,13 @@ function writeCommandFromQueue() {
   });
 }
 
+function unsubscribeAll() {
+  subscribers = [];
+  if (serial.isOpen) serial.close();
+}
+
 module.exports = {
   subscribe,
   sendCommand,
-  unsubscribeAll: serial.close,
+  unsubscribeAll,
 };
