@@ -35,6 +35,7 @@ body {
   font-family: 'Montserrat', 'HelveticaNeue', 'Helvetica Neue', Helvetica, Arial,
     sans-serif;
   font-size: 1.6rem;
+  user-select: none;
 }
 
 header {

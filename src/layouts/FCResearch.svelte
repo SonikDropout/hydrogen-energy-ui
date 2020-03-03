@@ -152,7 +152,11 @@
                   , {$data[characteristic + pos].units}
                 </span>
                 <strong class="value">
+                {#if characteristic == 'current' && $data[characteristic+pos].value < 0.04}
+                  &lt; 0.04
+                {:else}
                   {$data[characteristic + pos].value}
+                {/if}
                 </strong>
               </li>
             {/each}
@@ -168,7 +172,13 @@
                 {@html $commonData[characteristic].symbol}
                 , {$commonData[characteristic].units}
               </span>
-              <strong class="value">{$commonData[characteristic].value}</strong>
+              <strong class="value">
+              {#if characteristic.startsWith('current') && $commonData[characteristic].value < 0.04}
+                  &lt; 0.04
+                {:else}
+                  {$commonData[characteristic].value}
+                {/if}
+                </strong>
             </li>
           {/each}
         </ul>

@@ -118,10 +118,10 @@ const COMMANDS = [
     switchConnectionType: m => [28, m],
     switchLoadMode: m => [32, m],
     setValue: v => [36, 10 * v],
-    setBlowDuration1: v => [40, (v / 10) | 0],
+    setBlowDuration1: v => [40, v],
     setBlowPeriod1: v => [44, v],
     setFanPower1: v => [48, v],
-    setBlowDuration2: v => [52, (v / 10) | 0],
+    setBlowDuration2: v => [52, v],
     setBlowPeriod2: v => [56, v],
     setFanPower2: v => [60, v],
   }
@@ -132,7 +132,7 @@ const CONSTRAINTS = {
   voltage: [3, 15],
   power: [1, 20],
   fanPower: [5, 100],
-  blowDuration: [20, 500],
+  blowDuration: [20, 250],
   blowPeriod: [1, 200],
 };
 

@@ -14,8 +14,8 @@
 
   $: {
     if (diff < 200) step = 1;
-    if (diff < 10) step = 0.1;
-    if (diff < 1) step = 0.01;
+    if (diff < 20) step = 0.1;
+    if (diff < 2) step = 0.01;
   }
 
   let timeout,
@@ -42,17 +42,20 @@
     }, 500);
   }
 
-  function pressIncrement() {
+  function pressIncrement(e) {
     stickyCall(increment);
+    e.target.setPointerCapture(e.pointerId);
   }
 
-  function pressDecrement() {
+  function pressDecrement(e) {
     stickyCall(decrement);
+    e.target.setPointerCapture(e.pointerId);
   }
 
-  function release() {
+  function release(e) {
     if (timeout) clearTimeout(timeout);
     if (interval) clearInterval(interval);
+    e.target.releasePointerCapture(e.pointerId);
     onChange(value, name);
   }
 </script>
@@ -95,7 +98,6 @@
     font-size: 2rem;
     text-align: center;
     display: inline-block;
-    user-select: none;
   }
   button {
     border: none;
