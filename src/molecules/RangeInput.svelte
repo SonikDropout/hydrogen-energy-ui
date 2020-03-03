@@ -5,7 +5,7 @@
   export let name;
   export let defaultValue = range[0];
 
-  let step = 1;
+  let step = 10;
 
   $: min = Math.min.apply(null, range);
   $: max = Math.max.apply(null, range);
@@ -13,8 +13,9 @@
   $: value = Math.min(Math.max(defaultValue, range[0]), range[1]);
 
   $: {
-    if (diff < 1) step = 0.01;
+    if (diff < 200) step = 1;
     if (diff < 10) step = 0.1;
+    if (diff < 1) step = 0.01;
   }
 
   let timeout,
@@ -94,6 +95,7 @@
     font-size: 2rem;
     text-align: center;
     display: inline-block;
+    user-select: none;
   }
   button {
     border: none;

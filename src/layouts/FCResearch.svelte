@@ -53,15 +53,14 @@
   ];
   const loadModeOptions = [
     { label: 'внутр нагрузка отключена', value: 0 },
-    { label: 'постоянный ток', name: 'current', value: 1, symbol: 'I' },
-    { label: 'постоянное напряжение', name: 'voltage', value: 2, symbol: 'U' },
+    { label: 'постоянное напряжение', name: 'voltage', value: 1, symbol: 'U' },
+    { label: 'постоянный ток', name: 'current', value: 2, symbol: 'I' },
     { label: 'постоянная мощность', name: 'power', value: 3, symbol: 'P' },
   ];
 
   let selectedLoadMode = loadModeOptions[$data.loadMode];
 
   function setConnectionType(t) {
-    connectionType.set(+t);
     ipcRenderer.send('serialCommand', COMMANDS.switchConnectionType(+t));
   }
   function setLoadMode(m) {
