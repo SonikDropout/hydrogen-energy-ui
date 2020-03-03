@@ -29,7 +29,7 @@ module.exports = function parse(buf) {
     data[key] = buf[i++];
   }
   for (const pos of [1, 2]) {
-    data['power' + pos].value = +(data['current' + pos].value * data['voltage' + pos].value).toPrecision(4);
+    data['power' + pos].value = +(data['current' + pos].value * data['voltage' + pos].value).toPrecision(2);
   }
   return data;
 };
