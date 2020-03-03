@@ -19,7 +19,7 @@ Object.defineProperty(usbPort, 'isDeviceConnected', {
 });
 
 usbDetect.startMonitoring();
-usbDetect.on('add', delay(findDrive, 300));
+usbDetect.on('add', delay(findDrive, 1500));
 usbDetect.on('remove', handleRemove);
 
 function findDrive() {
@@ -29,7 +29,7 @@ function findDrive() {
       connectedDevice = drive.device;
       usbPort.emit('add', drive.mountpoints[0].path);
     }
-  });
+  }).catch(console.error);
 }
 
 function isSuitableDrive(drive) {

@@ -8,7 +8,7 @@
     "wp-build": "webpack",
     "postinstall": "electron-builder install-app-deps",
     "el-watch": "electron .",
-    "build": "electron-builder --dir --linux",
+    "build": "electron-builder --dir --linux --armv7l",
     "dev": "run-p wp-watch el-watch",
     "inspect": "electron --inspect ."
   },
@@ -44,7 +44,7 @@
   },
   "build": {
     "linux": {
-      "productName": "HydrogenEnergy",
+      "executableName": "HydrogenEnergy",
       "icon": "doc/icon.png",
       "category": "education"
     }
