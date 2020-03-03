@@ -1,7 +1,7 @@
 {
   "name": "thermo-electricity",
   "version": "1.0.0",
-  "description": "GUI interface for thermoelectricity stand",
+  "description": "GUI for hydrogen energy stand",
   "main": "main.js",
   "scripts": {
     "wp-watch": "webpack --watch",
@@ -40,5 +40,13 @@
     "svelteSortOrder": "scripts-markup-styles",
     "singleQuote": true,
     "trailingComma": "es5"
+  },
+  "build": {
+    "linux": {
+      "target": "dir",
+      "productName": "HydrogenEnergy",
+      "icon": "doc/icon.png",
+      "category": "education",
+    }
   }
 }
