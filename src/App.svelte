@@ -3,6 +3,7 @@
   import SetParams from "./layouts/SetParams";
   import FCResearch from "./layouts/FCResearch";
   import Charts from "./layouts/Charts";
+  import Warnings from './molecules/Warnings';
   let state = STATES.initial;
 </script>
 
@@ -21,6 +22,7 @@
 </style>
 
 <div class={state}>
+  <Warnings />
   <SetParams onNext={() => (state = STATES.research)} />
   <FCResearch
     onNext={() => (state = STATES.charts)}
