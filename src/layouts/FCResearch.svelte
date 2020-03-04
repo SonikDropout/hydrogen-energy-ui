@@ -3,7 +3,6 @@
   import Select from '../molecules/Select';
   import Toggle from '../atoms/Toggle';
   import RangeInput from '../molecules/RangeInput';
-  import Warnings from '../molecules/Warnings';
   import { data, commonData } from '../stores';
   import { COMMANDS, CONSTRAINTS } from '../constants';
   import { ipcRenderer } from 'electron';

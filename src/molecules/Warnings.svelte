@@ -45,12 +45,13 @@
 
 <style>
   .warnings {
-    position: absolute;
+    position: fixed;
     display: flex;
     align-items: center;
     top: 24px;
     right: 24px;
     max-width: 12rem;
+    z-index: 9001;
   }
   .warnings > * {
     margin-left: 8px;
@@ -78,5 +79,6 @@
     animation: blink 1s linear infinite alternate;
     color: var(--danger-color);
     font-size: 0.8rem;
+    max-width: 6rem;
   }
 </style>
