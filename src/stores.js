@@ -25,11 +25,15 @@ const commonData = derived(data, $data => {
   const d = {};
   for (const key in COMMON_DATA) d[key] = { ...$data[key] };
   for (let i = 0; i < summed.length; ++i) {
-    const key = summed[i];
+    const key = summed[i] + 'Common';
     d[key] = { ...$data[key + 1] };
-    d[key].value = +($data[key + 1].value + $data[key + 2].value).toPrecision(4);
+    d[key].value = +($data[key + 1].value + $data[key + 2].value).toPrecision(
+      4
+    );
     d[key].symbol = d[key].symbol + '<sub>&#x2211;</sub>';
   }
+  if (data.connectionType === 0) d.current.value = $data.current1.value;
+  if (data.connectionType === 1) d.voltage.value = $data.voltage1.value;
   return d;
 });
 

@@ -1,14 +1,3 @@
-passwd --delete pi
-
-# WI-FI SETUP
-cat <<EOT >> /etc/wpa_supplicant/wpa_supplicant.conf
-network={
-    ssid="InEnergy"
-    psk="9031100133"
-}
-EOT
-wpa_cli -i wlan0 reconfigure
-
 # INSTALL REQUIRED PACKAGES
 apt install npm libudev-dev chromium-borwser xorg
 
@@ -27,15 +16,9 @@ chmod +x ~/.xinitrc
 
 
 # BOOT SPEED OPTIMIZATIONS
+echo "enable_uart=1" >> /boot/config.txt
+
 cat <<EOT >> /boot/config.txt
-max_usb_current=1
-hdmi_group=2
-hdmi_mode=87
-hdmi_cvt 1024 600 60 6 0 0 0
-hdmi_drive=1
-
-enable_uart=1
-
 # Disable the rainbow splash screen
 disable_splash=1
 

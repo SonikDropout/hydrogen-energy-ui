@@ -1,38 +1,58 @@
 const { Workbook } = require('excel4node');
+const { getFileDate } = require('./others');
 const path = require('path');
 
 let wb,
-  ws,
+  ws = [],
   fileName,
   headerStyle,
   dataStyle,
   row = 1;
 
-function createFile(fileName, headers) {
-  fileName = fileName;
+function writeLog({ name, dir, rows, worksheets, headers, cb }) {
+  createFile(name);
+  addWorksheets(worksheets, headers);
+  writeRows(rows);
+  saveFile(dir);
+}
+
+function createFile(fileName) {
+  fileName = fileName + '_' + getFileDate();
   wb = new Workbook();
-  ws = wb.addWorksheet('Результаты');
   if (!headerStyle) createStyles();
-  for (let i = 0; i < headers.length; i++) {
-    ws.cell(row, i + 1)
-      .string(headers[i])
-      .style(headerStyle);
+}
+
+function addWorksheets(worksheets, headers) {
+  for (let i = 0; i < headers.length; ++i) {
+    ws[i] = wb.addWorksheet(worksheets[i]);
+    for (let j = 0; j < headers[i].length; ++j) {
+      ws[i]
+        .cell(row, j + 1)
+        .string(headers[i][j])
+        .style(headerStyle);
+    }
   }
   row++;
 }
 
-function writeRow(entries) {
+function writeRows(entries) {
   for (let i = 0; i < entries.length; i++) {
-    ws.cell(row, i + 1)
-      .number(entries[i])
-      .style(dataStyle);
+    for (let j = 0; j < entries[i].length; ++j) {
+      for (let k = 0; k < entries[i][j].length; ++k) {
+        ws[i]
+          .cell(row, k + 1)
+          .number(entries[i][j][k])
+          .style(dataStyle);
+      }
+    }
   }
   row++;
 }
 
-function saveFile(dir) {
-  wb.write(path.join(dir, fileName));
+function saveFile(dir, cb) {
+  wb.write(path.join(dir, fileName), cb);
   wb = ws = fileName = void 0;
+  row = 1;
 }
 
 function createStyles() {
@@ -70,7 +90,5 @@ function generateBorders() {
 }
 
 module.exports = {
-  writeRow,
-  createFile,
-  saveFile,
+  writeLog,
 };

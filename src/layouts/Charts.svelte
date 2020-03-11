@@ -8,12 +8,16 @@
   import zoom from 'chartjs-plugin-zoom';
   import configureChart from './chart.config';
   import { onMount } from 'svelte';
+  import PointsStorage from '../utils/PointsStorage';
   export let onPrev;
 
   onMount(() => {
     chart = new Chart(
       document.getElementById('chart').getContext('2d'),
-      configureChart(points, { x: selectedX.symbol, y: selectedY.symbol })
+      configureChart(pStorage.points, {
+        x: selectedX.symbol,
+        y: selectedY.symbol,
+      })
     );
     chart.options.onClick = chart.resetZoom;
   });
@@ -21,6 +25,12 @@
   ipcRenderer.send('usbStorageRequest');
   ipcRenderer.on('usbConnected', () => (saveDisabled = false));
   ipcRenderer.on('usbDisconnected', () => (saveDisabled = true));
+
+  const pointEntries = [1, 2, 'Common']
+    .map(name =>
+      ['current', 'voltage', 'power', 'consumption'].map(id => name + id)
+    )
+    .flat();
 
   const subjectOptions = [
     { label: 'БТЭ 1', value: 1 },
@@ -42,12 +52,13 @@
 
   let selectedX = xOptions[0],
     selectedY = yOptions[0],
-    points = [],
+    pStorage = new PointsStorage(),
     saveDisabled = true,
     selectedSubject,
     isDrawing,
     unsubscribeData,
     chart,
+    fileSaving,
     timeStart;
 
   $: startDisabled = !selectedSubject;
@@ -58,12 +69,18 @@
 
   function selectY(n) {
     selectedY = yOptions[n];
+    pStorage.setYCol(
+      pointEntries.indexOf(selectedY.name + selectedSubject.value) + 1
+    );
     chart.options.scales.yAxes[0].scaleLabel.labelString = selectedY.symbol;
     chart.update();
   }
 
   function selectX(n) {
     selectedX = xOptions[n];
+    pStorage.setXCol(
+      pointEntries.indexOf(selectedX.name + selectedSubject.value) + 1
+    );
     chart.options.scales.xAxes[0].scaleLabel.labelString = selectedX.symbol;
     chart.update();
   }
@@ -86,49 +103,46 @@
   }
 
   function stopDrawing() {
-    points = [];
+    pStorage.clear();
   }
 
   function subscribeData() {
     timeStart = Date.now();
-    if (selectedSubject.value == 'common') {
-      unsubscribeData = commonData.subscirbe(d => {
-        const row = getEntries(d);
-        sendToLogger(Object.values(row));
-        updateChart(row);
-      });
-    } else {
-      unsubscribeData = data.subscribe(d => {
-        const row = getEntries(d, true);
-        sendToLogger(Object.values(row));
-        updateChart(row);
-      });
-    }
+    unsubscribeData = commonData.subscirbe(d => {
+      pStorage.addRow(getEntries(d));
+      updateChart();
+    });
   }
 
-  function getEntries(data, withPostfix) {
-    const x =
-      selectedX.name == 'time'
-        ? (Date.now() - timeStart) / 1000
-        : data[selectedX.name + (withPostfix ? selectedSubject.value : '')]
-            .value;
-    const y =
-      data[selectedY.name + (withPostfix ? selectedSubject.value : '')].value;
-    return { x, y };
+  function getEntries(data) {
+    const row = [Math.floor((Date.now() - timeStart) / 1000)];
+    return row.concat(pointEntries.map(key => data[key].value));
   }
 
-  function updateChart(p) {
-    points.push(p);
-    chart.data.datasets[0].data = points;
+  function updateChart() {
+    chart.data.datasets[0].data = pStorage.points;
     chart.update();
   }
 
-  function sendToLogger(row) {
-    ipcRenderer.send('excelRow', row);
-  }
-
   function saveFile() {
-    ipcRenderer.send('saveFile');
+    ipcRenderer.send('writeExcel', {
+      name: selectedX.label + '-' + selectedY.label,
+      worksheets: ['БТЭ1', 'БТЭ2', 'БТЭ1 + БТЭ2'],
+      headers: Array(3).fill([
+        'Вермя, с',
+        'Ток, А',
+        'Напряжение, В',
+        'Мощьность, Вт',
+        'Расход, мл/мин',
+      ]),
+      rows: [
+        pStorage.rows.map(row => row.slice(0, 5)),
+        pStorage.rows.map(row => [row[0], ...row.slice(5, 9)]),
+        pStorage.rows.map(row => [row[0], ...row.slice(9, 13)]),
+      ],
+    });
+    fileSaving = true;
+    ipcRenderer.once('fileSaved', () => (fileSaving = false));
   }
 </script>
 
@@ -179,6 +193,9 @@
     </div>
     <div class="save">
       <Button on:click={saveFile} disabled={saveDisabled}>
+        {#if fileSaving}
+          <img src="../static/icons/spinner.svg" alt="spinner" class="spin" />
+        {/if}
         Сохранить данные на USB-устройство
       </Button>
     </div>
@@ -227,5 +244,8 @@
   main :global(button) {
     margin-top: auto;
     align-self: flex-start;
+  }
+  .spin {
+    animation: spin 1s linear infinite;
   }
 </style>

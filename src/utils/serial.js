@@ -4,6 +4,8 @@ const parse = require('./parser');
 
 const serial = new Serial(PORT.name, { baudRate: PORT.baudRate });
 
+serial.on('open', () => serial.write(Buffer.from([30, 80, 120, 230])));
+
 serial.on('data', handleData);
 
 let subscribers = [];
