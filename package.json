@@ -6,9 +6,9 @@
   "main": "main.js",
   "scripts": {
     "wp-watch": "webpack --watch",
-    "wp-build": "webpack",
+    "wp-build": "cross-env NODE_ENV=production webpack",
     "postinstall": "electron-builder install-app-deps",
-    "el-watch": "electron .",
+    "el-watch": "cross-env NODE_ENV=development  electron .",
     "el-build": "electron-builder --dir --linux --armv7l",
     "build": "run-s wp-build el-build",
     "dev": "run-p wp-watch el-watch",
