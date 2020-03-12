@@ -39,5 +39,9 @@ function randomData() {
 
 emitter.close = () => clearInterval(interval);
 emitter.sendCommand = console.log.bind(console, 'Sending command to serial:');
+emitter.startCalibration = (cb) => {
+  console.log('Start hydrogen sensor calibration');
+  cb(0);
+}
 
 module.exports = emitter;

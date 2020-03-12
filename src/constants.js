@@ -124,6 +124,7 @@ const COMMANDS = [
     setBlowDuration2: v => [52, v],
     setBlowPeriod2: v => [56, v],
     setFanPower2: v => [60, v],
+    startCalibration: 64,
   }
 );
 

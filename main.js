@@ -1,8 +1,10 @@
 const path = require('path');
+const fs = require('fs');
 const url = require('url');
 const electron = require('electron');
 const logger = require('./src/utils/logger');
 const usbPort = require('./src/utils/usbPort');
+const settings = require('./settings.json');
 const { clone } = require('./src/utils/others');
 const { IS_RPI: isPi, STATE_DATA, FC_DATA } = require('./src/constants');
 const { app, BrowserWindow, ipcMain } = electron;
@@ -29,7 +31,7 @@ function reloadOnChange(win) {
   if (mode !== 'development') return { close: () => {} };
 
   const watcher = require('chokidar').watch(
-    path.join(__dirname, 'dist', '**'),
+    path.join(__dirname, 'static', '**'),
     {
       ignoreInitial: true,
     }
@@ -40,6 +42,15 @@ function reloadOnChange(win) {
   });
 
   return watcher;
+}
+
+function onCalibrationFinish(report) {
+  return function(criticalConcentration) {
+    settings.criticalHydrogenConcentration = criticalConcentration;
+    fs.writeFile('./settings.json', JSON.stringify(settings), () => {
+      report('calibrationFinish');
+    });
+  };
 }
 
 function initPeripherals(win) {
@@ -57,6 +68,9 @@ function initPeripherals(win) {
   serial
     .on('data', d => win.webContents.send('serialData', d))
     .once('data', d => (initialData = d));
+  ipcMain.on('calibrationStart', e =>
+    serial.startCalibration(onCalibrationFinish(e.reply))
+  );
   ipcMain.on('writeExcel', (_, options) =>
     logger.writeLog({
       dir: usbPath,

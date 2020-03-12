@@ -66,7 +66,19 @@ function close() {
   if (serial.isOpen) serial.close();
 }
 
+function startCalibration(cb) {
+  serial.removeListener('data', handleData);
+  serial.write(Buffer.from([30, 60, 0, 90]));
+  serial.once('data', buf => {
+    if (buf.length === 1) {
+      cb(buf[0]);
+      serial.on('data', handleData);
+    }
+  });
+}
+
 emitter.close = close;
 emitter.sendCommand = sendCommand;
+emitter.startCalibration = startCalibration;
 
 module.exports = emitter;

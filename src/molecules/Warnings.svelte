@@ -1,10 +1,9 @@
 <script>
-  import { data } from '../stores';
+  import { data, isCriticalConcentration } from '../stores';
   import { LOW_PRESSURE } from '../constants';
   import { slide } from 'svelte/transition';
-  $: isCriticalConcentration = $data.hydrogenConcentration > 1;
   $: isLowPressure = $data.pressure.value < LOW_PRESSURE;
-  $: visible = isLowPressure || isCriticalConcentration;
+  $: visible = isLowPressure || $isCriticalConcentration;
   let tooltipVisible = false;
   function toggleTooltip() {
     tooltipVisible = !tooltipVisible;
@@ -13,7 +12,7 @@
 
 {#if visible}
   <div class="warnings">
-    {#if isCriticalConcentration}
+    {#if $isCriticalConcentration}
       <svg
         on:click={toggleTooltip}
         xmlns="http://www.w3.org/2000/svg"

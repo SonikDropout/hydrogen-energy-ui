@@ -4,10 +4,19 @@
   import FCResearch from './layouts/FCResearch';
   import Charts from './layouts/Charts';
   import Warnings from './molecules/Warnings';
+  import CalibartionButton from './molecules/CalibrationButton';
+  import CalibartionModal from './molecules/CalibartionModal';
+  import { ipcRenderer } from 'electron';
   let state = STATES.initial;
+  let showModal = false;
+  ipcRenderer.on('calibrationFinish', () => (showModal = false));
 </script>
 
 <Warnings />
+<CalibartionButton onClick={() => (showModal = true)} />
+{#if showModal}
+  <CalibartionModal />
+{/if}
 <div class={state}>
   <SetParams onNext={() => (state = STATES.research)} />
   <FCResearch
