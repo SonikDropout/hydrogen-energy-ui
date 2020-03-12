@@ -36,10 +36,10 @@
   const commonCharacteristics = [
     'pressure',
     'tankTemp',
-    'consumption',
-    'power',
-    'voltage',
-    'current',
+    'consumptionCommon',
+    'powerCommon',
+    'voltageCommon',
+    'currentCommon',
     'currentInternal',
     'currentExternal',
   ];

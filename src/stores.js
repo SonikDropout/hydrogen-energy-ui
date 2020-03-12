@@ -1,20 +1,8 @@
 const { writable, derived } = require('svelte/store');
-const { clone } = require('./utils/others');
-const { FC_DATA, COMMON_DATA, STATE_DATA } = require('./constants');
+const { COMMON_DATA, } = require('./constants');
 const { ipcRenderer } = require('electron');
 
-const initialData = clone(FC_DATA);
-
-for (let key in initialData) initialData[key].value = 0;
-for (let key in STATE_DATA) initialData[key] = 0;
-for (let pos of [1, 2]) {
-  initialData['power' + pos] = {
-    symbol: 'P',
-    units: 'Вт',
-    value:
-      initialData['current' + pos].value * initialData['voltage' + pos].value,
-  };
-}
+const initialData = ipcRenderer.sendSync('initial-data-request')
 
 const data = writable(initialData);
 const connectionType = writable();
@@ -25,12 +13,12 @@ const commonData = derived(data, $data => {
   const d = {};
   for (const key in COMMON_DATA) d[key] = { ...$data[key] };
   for (let i = 0; i < summed.length; ++i) {
-    const key = summed[i] + 'Common';
-    d[key] = { ...$data[key + 1] };
-    d[key].value = +($data[key + 1].value + $data[key + 2].value).toPrecision(
+    const key = summed[i];
+    d[key + 'Common'] = { ...$data[key + 1] };
+    d[key + 'Common'].value = +($data[key + 1].value + $data[key + 2].value).toPrecision(
       4
     );
-    d[key].symbol = d[key].symbol + '<sub>&#x2211;</sub>';
+    d[key + 'Common'].symbol = d[key + 'Common'].symbol + '<sub>&#x2211;</sub>';
   }
   if (data.connectionType === 0) d.current.value = $data.current1.value;
   if (data.connectionType === 1) d.voltage.value = $data.voltage1.value;

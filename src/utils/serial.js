@@ -1,14 +1,15 @@
 const Serial = require('serialport');
 const { PORT, SEPARATORS } = require('../constants');
+const EventEmitter = require('events');
 const parse = require('./parser');
 
 const serial = new Serial(PORT.name, { baudRate: PORT.baudRate });
+const emitter = new EventEmitter();
 
 serial.on('open', () => serial.write(Buffer.from([30, 80, 120, 230])));
 
 serial.on('data', handleData);
 
-let subscribers = [];
 const buffer = Buffer.alloc(52);
 let offset = 0;
 
@@ -18,7 +19,7 @@ function handleData(buf) {
   if (idx != -1) {
     buf.copy(buffer, offset, 0, idx);
     try {
-      subscribers.forEach(fn => fn(parse(buffer.slice())));
+      emitter.emit('data', parse(buffer.slice()));
     } catch (e) {
       // pass invalid buffer
     }
@@ -29,10 +30,6 @@ function handleData(buf) {
     buf.copy(buffer, offset);
     offset += buf.length;
   }
-}
-
-function subscribe(fn) {
-  subscribers.push(fn);
 }
 
 let commandQueue = [];
@@ -64,13 +61,12 @@ function writeCommandFromQueue() {
   });
 }
 
-function unsubscribeAll() {
-  subscribers = [];
+function close() {
+  emitter.removeAllListeners();
   if (serial.isOpen) serial.close();
 }
 
-module.exports = {
-  subscribe,
-  sendCommand,
-  unsubscribeAll,
-};
+emitter.close = close;
+emitter.sendCommand = sendCommand;
+
+module.exports = emitter;

@@ -3,10 +3,25 @@ const url = require('url');
 const electron = require('electron');
 const logger = require('./src/utils/logger');
 const usbPort = require('./src/utils/usbPort');
-const { IS_RPI: isPi } = require('./src/constants');
+const { clone } = require('./src/utils/others');
+const { IS_RPI: isPi, STATE_DATA, FC_DATA } = require('./src/constants');
 const { app, BrowserWindow, ipcMain } = electron;
 
-let win, usbPath;
+let win,
+  usbPath,
+  initialData = clone(FC_DATA);
+
+for (let key in initialData) initialData[key].value = 0;
+for (let key in STATE_DATA) initialData[key] = 0;
+initialData.connectionType = 1;
+for (let pos of [1, 2]) {
+  initialData['power' + pos] = {
+    symbol: 'P',
+    units: 'Вт',
+    value:
+      initialData['current' + pos].value * initialData['voltage' + pos].value,
+  };
+}
 
 const mode = process.env.NODE_ENV;
 
@@ -28,6 +43,7 @@ function reloadOnChange(win) {
 }
 
 function initPeripherals(win) {
+  ipcMain.on('initial-data-request', e => (e.returnValue = initialData));
   const serial = require(`./src/utils/serial${isPi ? '' : '.mock'}`);
   usbPort
     .on('add', path => {
@@ -38,7 +54,9 @@ function initPeripherals(win) {
       usbPath = void 0;
       win.webContents.send('usbDisconnected');
     });
-  serial.subscribe(d => win.webContents.send('serialData', d));
+  serial
+    .on('data', d => win.webContents.send('serialData', d))
+    .once('data', d => (initialData = d));
   ipcMain.on('writeExcel', (_, options) =>
     logger.writeLog({
       dir: usbPath,
@@ -51,7 +69,7 @@ function initPeripherals(win) {
   return {
     removeAllListeners() {
       usbPort.removeAllListeners();
-      serial.unsubscribeAll();
+      serial.close();
     },
   };
 }
