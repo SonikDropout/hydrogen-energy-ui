@@ -28,8 +28,8 @@ const addCalculatedSums = d => {
     ).toPrecision(4);
     d[key + 'Common'].symbol = d[key + 'Common'].symbol + '<sub>&#x2211;</sub>';
   }
-  if (d.connectionType === 0) d.current.value = d.current1.value;
-  if (d.connectionType === 1) d.voltage.value = d.voltage1.value;
+  if (d.connectionType === 0) d.currentCommon.value = d.current1.value;
+  if (d.connectionType === 1) d.voltageCommon.value = d.voltage1.value;
   return d;
 };
 

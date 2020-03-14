@@ -18,7 +18,7 @@ class PointsStorage {
 
   setXCol(col) {
     this._xCol = col;
-    _updatePoints();
+    this._updatePoints();
   }
 
   setYCol(col) {
