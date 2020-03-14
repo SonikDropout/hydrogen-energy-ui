@@ -4,19 +4,11 @@
   export let onChange;
   export let name;
   export let defaultValue = range[0];
-
-  let step = 10;
+  export let step = 1;
 
   $: min = Math.min.apply(null, range);
   $: max = Math.max.apply(null, range);
-  $: diff = max - min;
-  $: value = Math.min(Math.max(defaultValue, range[0]), range[1]);
-
-  $: {
-    if (diff < 200) step = 1;
-    if (diff < 20) step = 0.1;
-    if (diff < 2) step = 0.01;
-  }
+  $: value = Math.min(Math.max(defaultValue, min), max);
 
   let timeout,
     interval,
@@ -26,12 +18,18 @@
   function increment() {
     if (value + step <= max) {
       value = +(value + step).toPrecision(3);
+    } else {
+      clearTimers();
+      changeTimeout = setTimeout(onChange, 200, value, name);
     }
   }
 
   function decrement() {
     if (value - step >= min) {
       value = +(value - step).toPrecision(3);
+    } else {
+      clearTimers();
+      changeTimeout = setTimeout(onChange, 200, value, name);
     }
   }
 
