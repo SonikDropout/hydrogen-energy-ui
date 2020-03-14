@@ -2,11 +2,11 @@
   --text-color: #333;
   --bg-color: white;
   --corporate-orange: #f07e0f;
-  --corporate-blue: #1aa2dd;
+  --corporate-blue: rgb(26, 162, 221);
   --corporate-emerald: #37abb8;
   --corporate-emerald-darken: #1C5B57;
   --corporate-light-green: #8bc041;
-  --corporate-blue-darken: #065b8c;
+  --corporate-blue-darken: rgb(6, 91, 140);
   --danger-color: #dc3545;
   --corporate-grey: #969ba5;
   --corporate-grey-darken: #74787f;

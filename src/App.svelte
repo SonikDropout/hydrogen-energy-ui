@@ -9,6 +9,7 @@
   import { onMount } from 'svelte';
   import { ipcRenderer } from 'electron';
   import { appInitialized } from './stores';
+  import RangeInput from './molecules/RangeInput';
   let state = STATES.initial;
   let showModal = false;
   ipcRenderer.on('calibrationFinish', () =>

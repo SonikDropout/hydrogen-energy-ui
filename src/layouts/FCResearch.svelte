@@ -52,9 +52,9 @@
   ];
   const loadModeOptions = [
     { label: 'внутр нагрузка отключена', value: 0 },
-    { label: 'постоянное напряжение', name: 'voltage', value: 1, symbol: 'U' },
-    { label: 'постоянный ток', name: 'current', value: 2, symbol: 'I' },
-    { label: 'постоянная мощность', name: 'power', value: 3, symbol: 'P' },
+    { label: 'постоянное напряжение', name: 'voltage', value: 1, symbol: 'U, B' },
+    { label: 'постоянный ток', name: 'current', value: 2, symbol: 'I, A' },
+    { label: 'постоянная мощность', name: 'power', value: 3, symbol: 'P, Вт' },
   ];
 
   let selectedLoadMode = loadModeOptions[$data.loadMode];
@@ -89,7 +89,7 @@
 <div class="layout">
   <header>Исследование работы топливных элементов</header>
   <main>
-    <div class="row">
+    <div class="row first">
       <div class="select-field col">
         <div class="label">Тип соединения</div>
         <Select
@@ -108,6 +108,7 @@
         {#if selectedLoadMode.value}
           <span class="label">Задать {selectedLoadMode.symbol}</span>
           <RangeInput
+            step={selectedLoadMode.value === 2 ? 0.1 : 1}
             onChange={setLoadValue}
             defaultValue={getValue(data).loadValue.value}
             range={CONSTRAINTS[selectedLoadMode.name]} />
@@ -199,6 +200,9 @@
   .row {
     display: flex;
     justify-content: space-evenly;
+  }
+  .row.first {
+    height: 7rem;
   }
   .col {
     flex: 1 1 27rem;

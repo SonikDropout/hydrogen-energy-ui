@@ -10,116 +10,114 @@
   $: max = Math.max.apply(null, range);
   $: value = Math.min(Math.max(defaultValue, min), max);
 
-  let timeout,
-    interval,
-    changeTimeout,
-    showControls = false;
+  let input, dispatchTimeout;
+
+  function handleChange(e) {
+    clearTimeout(dispatchTimeout);
+    value = e.target.value;
+    dispatchTimeout = setTimeout(onChange, 300, value, name);
+  }
 
   function increment() {
-    if (value + step <= max) {
-      value = +(value + step).toPrecision(3);
-    } else {
-      clearTimers();
-      changeTimeout = setTimeout(onChange, 200, value, name);
-    }
+    input.stepUp();
+    input.dispatchEvent(new Event('change'));
   }
 
   function decrement() {
-    if (value - step >= min) {
-      value = +(value - step).toPrecision(3);
-    } else {
-      clearTimers();
-      changeTimeout = setTimeout(onChange, 200, value, name);
-    }
-  }
-
-  function stickyCall(fn) {
-    fn();
-    timeout = setTimeout(() => {
-      fn();
-      interval = setInterval(fn, 50);
-    }, 500);
-  }
-
-  function pressIncrement(e) {
-    stickyCall(increment);
-    e.target.setPointerCapture(e.pointerId);
-  }
-
-  function pressDecrement(e) {
-    stickyCall(decrement);
-    e.target.setPointerCapture(e.pointerId);
-  }
-
-  function release(e) {
-    clearTimers();
-    e.target.releasePointerCapture(e.pointerId);
-    changeTimeout = setTimeout(onChange, 200, value, name);
-  }
-
-  function clearTimers() {
-    clearTimeout(timeout);
-    clearTimeout(changeTimeout);
-    clearInterval(interval);
+    input.stepDown();
+    input.dispatchEvent(new Event('change'));
   }
 </script>
 
-<span class="input-wrapper" class:disabled>
-  <button
-    disabled={value <= min || disabled}
-    class="decrementer"
-    on:pointerdown={pressDecrement}
-    on:pointercancel={release}
-    on:pointerup={release}>
-    <span>-</span>
-  </button>
-  <span class="input">{value}</span>
-  <button
-    disabled={value >= max || disabled}
-    class="incrementer"
-    on:pointerdown={pressIncrement}
-    on:pointercancel={release}
-    on:pointerup={release}>
-    <span>+</span>
-  </button>
-</span>
+<div class="input" class:disabled>
+  <input
+    on:change={handleChange}
+    bind:this={input}
+    type="range"
+    {name}
+    {min}
+    {max}
+    {disabled}
+    bind:value
+    {step} />
+  <div class="controls">
+    <button disabled={value >= max} class="incrementer" on:click={increment}>
+      <span class="arrow">&#x276C;</span>
+    </button>
+    <span class="value">{value}</span>
+    <button disabled={value <= min} class="decrementer" on:click={decrement}>
+      <span class="arrow">&#x276D;</span>
+    </button>
+  </div>
+</div>
 
 <style>
-  .input-wrapper {
-    width: 16rem;
-    border-radius: 4px;
-    border: 1px solid var(--corporate-blue);
-    height: 3.2rem;
-    line-height: 3.2rem;
+  .input {
     display: flex;
-    overflow: hidden;
+    align-items: center;
   }
-  .input-wrapper.disabled {
+  .input.disabled {
     opacity: 0.6;
   }
-  .input {
+  input {
     flex-grow: 1;
-    padding: 0 1rem;
+    -webkit-appearance: none;
+  }
+  input::-webkit-slider-runnable-track {
+    background-color: rgb(194, 194, 194);
+    height: 8px;
     border: none;
-    font-size: 2rem;
-    text-align: center;
+    border-radius: 4px;
+  }
+  input::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    background-color: var(--corporate-blue);
+    -webkit-appearance: none;
+    margin-top: -4px;
+    border-radius: 50%;
+  }
+  input:focus {
+    -webkit-appearance: none;
+    outline: none;
+  }
+  input:active::-webkit-slider-thumb {
+    background-color: var(--corporate-blue);
+    box-shadow: 0 0 0 16px rgb(26, 162, 221, 0.2);
+    transform: scale(0.9);
+  }
+  input:active::-webkit-slider-runnable-track {
+    background-color: #b3b3b3;
+  }
+  .value {
+    width: 3rem;
     display: inline-block;
+    text-align: center;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
   }
   button {
+    display: block;
+    transform: translateX(2px);
     border: none;
     background-color: transparent;
-    width: 3.2rem;
-    font-size: 2.4rem;
-    line-height: 3.2rem;
+    font-size: 1.2rem;
     font-weight: 300;
+    padding: 0 2rem;
     outline: none;
-    background-color: var(--corporate-blue);
-    color: var(--bg-color);
+    color: var(--corporate-grey-darken)
   }
   button:focus {
     outline: none;
   }
   button:disabled {
     opacity: 0.5;
+  }
+  .arrow {
+    display: block;
+    transform: scale(3) rotate(90deg);
   }
 </style>
