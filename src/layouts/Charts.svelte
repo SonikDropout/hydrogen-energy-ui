@@ -39,8 +39,8 @@
   ];
 
   const xOptions = [
-    { name: 'current', label: 'Ток', value: 0, symbol: 'I, A' },
-    { name: 'time', label: 'Время', value: 1, symbol: 't, c' },
+    { name: 'time', label: 'Время', value: 0, symbol: 't, c' },
+    { name: 'current', label: 'Ток', value: 1, symbol: 'I, A' },
     { name: 'consumption', label: 'Расход', value: 2, symbol: 'Q, мл/мин' },
   ];
 
@@ -65,22 +65,30 @@
 
   function selectSubject(v) {
     selectedSubject = subjectOptions.find(s => s.value == v);
+    resetCols(true, true);
+  }
+
+  function resetCols(x, y) {
+    if (y)
+      pStorage.setYCol(
+        pointEntries.indexOf(selectedY.name + selectedSubject.value) + 1 // index 0 is time
+      );
+    if (x)
+      pStorage.setXCol(
+        pointEntries.indexOf(selectedX.name + selectedSubject.value) + 1 // index 0 is time
+      );
   }
 
   function selectY(n) {
     selectedY = yOptions[n];
-    pStorage.setYCol(
-      pointEntries.indexOf(selectedY.name + selectedSubject.value) + 1
-    );
+    resetCols(false, true);
     chart.options.scales.yAxes[0].scaleLabel.labelString = selectedY.symbol;
     chart.update();
   }
 
   function selectX(n) {
     selectedX = xOptions[n];
-    pStorage.setXCol(
-      pointEntries.indexOf(selectedX.name + selectedSubject.value) + 1
-    );
+    resetCols(true);
     chart.options.scales.xAxes[0].scaleLabel.labelString = selectedX.symbol;
     chart.update();
   }
@@ -154,10 +162,7 @@
       <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
       <div class="select-field">
         <span class="select-label">Объект исследования</span>
-        <Select
-          order={1}
-          onChange={selectSubject}
-          options={subjectOptions} />
+        <Select order={1} onChange={selectSubject} options={subjectOptions} />
       </div>
       <div class="select-field">
         <span class="select-label">Ось X</span>
