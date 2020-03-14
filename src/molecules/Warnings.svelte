@@ -4,8 +4,8 @@
   import { slide } from 'svelte/transition';
   import { onMount, onDestroy } from 'svelte';
 
-  onMount(() => document.addEventListener(onClickOutsideTooltip));
-  onMount(() => document.removeEventListener(onClickOutsideTooltip));
+  onMount(() => document.addEventListener('click', onClickOutsideTooltip));
+  onMount(() => document.removeEventListener('click', onClickOutsideTooltip));
 
   function onClickOutsideTooltip(e) {
     if (tooltipVisible && tooltip !== e.target) tooltipVisible = false;

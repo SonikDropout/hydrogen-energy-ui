@@ -39,7 +39,7 @@ ipcRenderer.on('serialData', (e, d) => data.set(d));
 ipcRenderer.on(
   'calibrationFinish',
   (e, v) => (criticalHydrogenConcentration = v)
-).on('serialInitiallized', () => appInitialized.set(true))
+).once('appInitialized', () => appInitialized.set(true))
 
 function getValue(store) {
   let $val;

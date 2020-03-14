@@ -50,7 +50,7 @@ function initPeripherals(win) {
     });
   serial
     .on('data', d => win.webContents.send('serialData', d))
-    .once('data', () => win.webContents.send('appInitialized'));
+    .on('data', () => win.webContents.send('appInitialized'));
   ipcMain.on('calibrationStart', e =>
     serial.startCalibration(onCalibrationFinish(e.reply))
   );

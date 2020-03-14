@@ -45,15 +45,15 @@
     text-align: center;
     font-size: 3.2rem;
   }
-  .conetent {
+  .content {
     width: 300vw;
     display: flex;
     transition: 0.3s ease-in-out;
   }
-  .conetent.research {
+  .content.research {
     transform: translateX(-100vw);
   }
-  .conetent.charts {
+  .content.charts {
     transform: translateX(-200vw);
   }
 </style>

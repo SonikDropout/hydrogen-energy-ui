@@ -28,7 +28,7 @@
 
   const pointEntries = [1, 2, 'Common']
     .map(name =>
-      ['current', 'voltage', 'power', 'consumption'].map(id => name + id)
+      ['current', 'voltage', 'power', 'consumption'].map(id => id + name)
     )
     .flat();
 
@@ -108,7 +108,7 @@
 
   function subscribeData() {
     timeStart = Date.now();
-    unsubscribeData = commonData.subscirbe(d => {
+    unsubscribeData = commonData.subscribe(d => {
       pStorage.addRow(getEntries(d));
       updateChart();
     });
