@@ -20,6 +20,7 @@
 
   let timeout,
     interval,
+    changeTimeout,
     showControls = false;
 
   function increment() {
@@ -53,10 +54,15 @@
   }
 
   function release(e) {
-    if (timeout) clearTimeout(timeout);
-    if (interval) clearInterval(interval);
+    clearTimers();
     e.target.releasePointerCapture(e.pointerId);
-    onChange(value, name);
+    changeTimeout = setTimeout(onChange, 200, value, name);
+  }
+
+  function clearTimers() {
+    clearTimeout(timeout);
+    clearTimeout(changeTimeout);
+    clearInterval(interval);
   }
 </script>
 
@@ -65,6 +71,7 @@
     disabled={value <= min || disabled}
     class="decrementer"
     on:pointerdown={pressDecrement}
+    on:pointercancel={release}
     on:pointerup={release}>
     <span>-</span>
   </button>
@@ -73,6 +80,7 @@
     disabled={value >= max || disabled}
     class="incrementer"
     on:pointerdown={pressIncrement}
+    on:pointercancel={release}
     on:pointerup={release}>
     <span>+</span>
   </button>
