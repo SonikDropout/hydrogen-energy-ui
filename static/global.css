@@ -88,3 +88,12 @@ h4 {font-size: 2rem;}
 @keyframes spin {
   to {transform: rotate(360deg);}
 }
+
+#initial-screen {
+  font-family: 'Oswald';
+  font-size: 3.2rem;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  line-height: 100vh;
+}

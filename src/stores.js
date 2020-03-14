@@ -1,18 +1,20 @@
-const { writable, derived } = require('svelte/store');
-const { COMMON_DATA } = require('./constants');
 const { ipcRenderer } = require('electron');
+const { writable, derived } = require('svelte/store');
+const { COMMON_DATA, SETTINGS_PATH } = require('./constants');
 const fs = require('fs');
-let { criticalHydrogenConcentration } = JSON.parse(fs.readFileSync('/home/pi/hydrogen-energy-ui/settings.json', 'utf-8'));
-console.log('SAVED CRITICAL CONCENTRATION:', criticalHydrogenConcentration)
+let { criticalHydrogenConcentration } = JSON.parse(
+  fs.readFileSync(SETTINGS_PATH, 'utf-8')
+);
 
-const initialData = ipcRenderer.sendSync('initial-data-request');
+const appInitialized = writable(false)
 
-const data = writable(initialData);
+const data = writable();
 // const isCriticatConcentration = writable(false);
 
 // data.subscribe(d => isCriticatConcentration.set(d.hydrogenConcentration > criticalHydrogenConcentration));
-const isCriticalConcentration = derived(data, $data =>
-  $data.hydrogenConcentration > criticalHydrogenConcentration
+const isCriticalConcentration = derived(
+  data,
+  $data => $data.hydrogenConcentration > criticalHydrogenConcentration
 );
 
 const summed = ['current', 'voltage', 'power', 'consumption'];
@@ -37,10 +39,18 @@ ipcRenderer.on('serialData', (e, d) => data.set(d));
 ipcRenderer.on(
   'calibrationFinish',
   (e, v) => (criticalHydrogenConcentration = v)
-);
+).on('serialInitiallized', () => appInitialized.set(true))
+
+function getValue(store) {
+  let $val;
+  store.subscribe($ => ($val = $))();
+  return $val;
+}
 
 module.exports = {
   data,
   commonData,
   isCriticalConcentration,
+  getValue,
+  appInitialized,
 };

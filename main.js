@@ -4,58 +4,40 @@ const url = require('url');
 const electron = require('electron');
 const logger = require('./src/utils/logger');
 const usbPort = require('./src/utils/usbPort');
-const settings = require('/home/pi/hydrogen-energy-ui/settings.json');
-const { clone } = require('./src/utils/others');
-const { IS_RPI: isPi, STATE_DATA, FC_DATA } = require('./src/constants');
+const { IS_RPI: isPi, SETTINGS_PATH } = require('./src/constants');
+const settings = require(SETTINGS_PATH);
 const { app, BrowserWindow, ipcMain } = electron;
 
-let win,
-  usbPath,
-  initialData = clone(FC_DATA);
-
-for (let key in initialData) initialData[key].value = 0;
-for (let key in STATE_DATA) initialData[key] = 0;
-initialData.connectionType = 1;
-for (let pos of [1, 2]) {
-  initialData['power' + pos] = {
-    symbol: 'P',
-    units: 'Вт',
-    value:
-      initialData['current' + pos].value * initialData['voltage' + pos].value,
-  };
-}
+let win, usbPath;
 
 const mode = process.env.NODE_ENV;
 
-function reloadOnChange(win) {
-  if (mode !== 'development') return { close: () => {} };
-
-  const watcher = require('chokidar').watch(
-    path.join(__dirname, 'static', '**'),
-    {
-      ignoreInitial: true,
-    }
-  );
-
-  watcher.on('change', () => {
-    win.reload();
+if (mode == 'development') {
+  var childProcess = require('child_process');
+  var oldSpawn = childProcess.spawn;
+  function mySpawn() {
+    console.log('spawn called');
+    console.log(arguments);
+    var result = oldSpawn.apply(this, arguments);
+    return result;
+  }
+  childProcess.spawn = mySpawn;
+  require('electron-reload')(__dirname, {
+    electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
   });
-
-  return watcher;
 }
 
 function onCalibrationFinish(report) {
   return function(criticalConcentration) {
     settings.criticalHydrogenConcentration = criticalConcentration;
     console.log('WRITING SETTINGS TO FILE:', settings);
-    fs.writeFile('/home/pi/hydrogen-energy-ui/settings.json', JSON.stringify(settings), () => {
+    fs.writeFile(SETTINGS_PATH, JSON.stringify(settings), () => {
       report('calibrationFinish', criticalConcentration);
     });
   };
 }
 
 function initPeripherals(win) {
-  ipcMain.on('initial-data-request', e => (e.returnValue = initialData));
   const serial = require(`./src/utils/serial${isPi ? '' : '.mock'}`);
   usbPort
     .on('add', path => {
@@ -68,7 +50,7 @@ function initPeripherals(win) {
     });
   serial
     .on('data', d => win.webContents.send('serialData', d))
-    .once('data', d => (initialData = d));
+    .once('data', () => win.webContents.send('appInitialized'));
   ipcMain.on('calibrationStart', e =>
     serial.startCalibration(onCalibrationFinish(e.reply))
   );
@@ -109,13 +91,11 @@ function launch() {
     })
   );
 
-  const watcher = reloadOnChange(win);
   const peripherals = initPeripherals(win);
 
   win.on('closed', function() {
     peripherals.removeAllListeners();
     win = null;
-    watcher.close();
   });
 }
 

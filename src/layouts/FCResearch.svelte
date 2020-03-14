@@ -3,7 +3,7 @@
   import Select from '../molecules/Select';
   import Toggle from '../atoms/Toggle';
   import RangeInput from '../molecules/RangeInput';
-  import { data, commonData } from '../stores';
+  import { data, getValue, commonData } from '../stores';
   import { COMMANDS, CONSTRAINTS } from '../constants';
   import { ipcRenderer } from 'electron';
   export let onPrev;
@@ -109,7 +109,7 @@
           <span class="label">Задать {selectedLoadMode.symbol}</span>
           <RangeInput
             onChange={setLoadValue}
-            defaultValue={$data.loadValue.value}
+            defaultValue={getValue(data).loadValue.value}
             range={CONSTRAINTS[selectedLoadMode.name]} />
         {/if}
       </div>

@@ -23,7 +23,7 @@ class PointsStorage {
 
   setYCol(col) {
     this._yCol = col;
-    _updatePoints();
+    this._updatePoints();
   }
 
   clear() {
@@ -36,6 +36,7 @@ class PointsStorage {
       x: row[this._xCol],
       y: row[this._yCol],
     }));
+    this._sortPoints();
   }
 
   _sortPoints() {

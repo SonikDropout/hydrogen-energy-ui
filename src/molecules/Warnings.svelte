@@ -2,9 +2,20 @@
   import { data, isCriticalConcentration } from '../stores';
   import { LOW_PRESSURE } from '../constants';
   import { slide } from 'svelte/transition';
+  import { onMount, onDestroy } from 'svelte';
+
+  onMount(() => document.addEventListener(onClickOutsideTooltip));
+  onMount(() => document.removeEventListener(onClickOutsideTooltip));
+
+  function onClickOutsideTooltip(e) {
+    if (tooltipVisible && tooltip !== e.target) tooltipVisible = false;
+  }
+
   $: isLowPressure = $data.pressure.value < LOW_PRESSURE;
   $: visible = isLowPressure || $isCriticalConcentration;
-  let tooltipVisible = false;
+
+  let tooltipVisible = false, tooltip;
+
   function toggleTooltip() {
     tooltipVisible = !tooltipVisible;
   }
@@ -26,7 +37,7 @@
           fill="var(--text-color)" />
       </svg>
       {#if tooltipVisible}
-        <div class="tooltip" transition:slide>
+        <div class="tooltip" transition:slide bind:this={tooltip}>
           Критически высокая концентрация водорода!
         </div>
       {/if}
@@ -63,7 +74,7 @@
     position: absolute;
     left: 0;
     font-size: 0.8rem;
-    transform: translate(-40%, -120%);
+    transform: translate(-40%, 120%);
     /* border: 1px solid var(--danger-color); */
     color: var(--danger-color);
     box-shadow: 0 0 2px;

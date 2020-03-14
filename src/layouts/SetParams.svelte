@@ -1,25 +1,75 @@
 <script>
-  import { data } from "../stores";
-  import RangeInput from "../molecules/RangeInput";
-  import Button from "../atoms/Button";
-  import { CONSTRAINTS, COMMANDS } from "../constants";
-  import { ipcRenderer } from "electron";
+  import { data, getValue } from '../stores';
+  import RangeInput from '../molecules/RangeInput';
+  import Button from '../atoms/Button';
+  import { CONSTRAINTS, COMMANDS } from '../constants';
+  import { ipcRenderer } from 'electron';
   export let onNext;
 
   const columns = [{ pos: 1 }, { pos: 2 }];
 
+  const initialData = getValue(data);
+
   function setFanPower(v, fc) {
-    ipcRenderer.send("serialCommand", COMMANDS['setFanPower' + fc](v))
+    ipcRenderer.send('serialCommand', COMMANDS['setFanPower' + fc](v));
   }
 
   function setBlowPeriod(v, fc) {
-    ipcRenderer.send("serialCommand", COMMANDS["setBlowPeriod" + fc](v));
+    ipcRenderer.send('serialCommand', COMMANDS['setBlowPeriod' + fc](v));
   }
 
   function setBlowDuration(v, fc) {
-    ipcRenderer.send("serialCommand", COMMANDS["setBlowDuration" + fc](v));
+    ipcRenderer.send('serialCommand', COMMANDS['setBlowDuration' + fc](v));
   }
 </script>
+
+<div class="layout">
+  <header>Задание параметров работы батарей топливных элементов</header>
+  <main>
+    {#each columns as { pos }}
+      <div class="col">
+        <h2>БТЭ {pos}</h2>
+        <img
+          src="../static/icons/fuelCell.svg"
+          alt="fuelCell"
+          class="fc-icon" />
+        <figure>
+          <img src="../static/icons/fan.svg" alt="fan" />
+          <figcaption>Вентилятор</figcaption>
+        </figure>
+        <div class="input-field">
+          <div class="label">Мощность вентилятора, % от макс</div>
+          <RangeInput
+            name={pos}
+            onChange={setFanPower}
+            range={CONSTRAINTS.fanPower}
+            defaultValue={initialData['fanPower' + pos].value} />
+        </div>
+        <figure>
+          <img src="../static/icons/valve.svg" alt="valve" />
+          <figcaption>Продувочный клапан</figcaption>
+        </figure>
+        <div class="input-field">
+          <div class="label">Периодичность продувки, с</div>
+          <RangeInput
+            name={pos}
+            onChange={setBlowPeriod}
+            range={CONSTRAINTS.blowPeriod}
+            defaultValue={initialData['blowPeriod' + pos].value} />
+          <div class="label">Длительность продувки, мс</div>
+          <RangeInput
+            name={pos}
+            onChange={setBlowDuration}
+            range={CONSTRAINTS.blowDuration}
+            defaultValue={initialData['blowDuration' + pos].value} />
+        </div>
+      </div>
+    {/each}
+  </main>
+  <footer>
+    <Button on:click={onNext}>Перейти к исследованиям</Button>
+  </footer>
+</div>
 
 <style>
   main {
@@ -59,51 +109,3 @@
     justify-content: center;
   }
 </style>
-
-<div class="layout">
-  <header>Задание параметров работы батарей топливных элементов</header>
-  <main>
-    {#each columns as { pos }}
-      <div class="col">
-        <h2>БТЭ {pos}</h2>
-        <img
-          src="../static/icons/fuelCell.svg"
-          alt="fuelCell"
-          class="fc-icon" />
-        <figure>
-          <img src="../static/icons/fan.svg" alt="fan" />
-          <figcaption>Вентилятор</figcaption>
-        </figure>
-        <div class="input-field">
-          <div class="label">Мощность вентилятора, % от макс</div>
-          <RangeInput
-            name={pos}
-            onChange={setFanPower}
-            range={CONSTRAINTS.fanPower}
-            defaultValue={$data['fanPower' + pos].value} />
-        </div>
-        <figure>
-          <img src="../static/icons/valve.svg" alt="valve" />
-          <figcaption>Продувочный клапан</figcaption>
-        </figure>
-        <div class="input-field">
-          <div class="label">Периодичность продувки, с</div>
-          <RangeInput
-            name={pos}
-            onChange={setBlowPeriod}
-            range={CONSTRAINTS.blowPeriod}
-            defaultValue={$data['blowPeriod' + pos].value} />
-          <div class="label">Длительность продувки, мс</div>
-          <RangeInput
-            name={pos}
-            onChange={setBlowDuration}
-            range={CONSTRAINTS.blowDuration}
-            defaultValue={$data['blowDuration' + pos].value} />
-        </div>
-      </div>
-    {/each}
-  </main>
-  <footer>
-    <Button on:click={onNext}>Перейти к исследованиям</Button>
-  </footer>
-</div>

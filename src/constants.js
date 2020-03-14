@@ -1,4 +1,5 @@
 const { mergeRename } = require('./utils/others');
+const path = require('path');
 
 const IS_RPI = process.platform === 'linux' && process.arch == 'arm';
 const PORT = {
@@ -145,6 +146,10 @@ const CONNECTION_TYPES = [
   'не выбран',
 ];
 
+const SETTINGS_PATH = IS_RPI
+  ? '/home/pi/hydrogen-energy-ui/settings.json'
+  : path.join(__dirname, '..', 'settings.json');
+
 module.exports = {
   IS_RPI,
   PORT,
@@ -157,4 +162,5 @@ module.exports = {
   CONSTRAINTS,
   COMMANDS,
   CONNECTION_TYPES,
+  SETTINGS_PATH,
 };
