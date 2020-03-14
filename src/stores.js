@@ -19,23 +19,21 @@ const isCriticalConcentration = derived(
 
 const summed = ['current', 'voltage', 'power', 'consumption'];
 
-const commonData = derived(data, $data => {
-  const d = {};
-  for (const key in COMMON_DATA) d[key] = { ...$data[key] };
+const addCalculatedSums = d => {
   for (let i = 0; i < summed.length; ++i) {
     const key = summed[i];
-    d[key + 'Common'] = { ...$data[key + 1] };
+    d[key + 'Common'] = { ...d[key + 1] };
     d[key + 'Common'].value = +(
-      $data[key + 1].value + $data[key + 2].value
+      d[key + 1].value + d[key + 2].value
     ).toPrecision(4);
     d[key + 'Common'].symbol = d[key + 'Common'].symbol + '<sub>&#x2211;</sub>';
   }
-  if (data.connectionType === 0) d.current.value = $data.current1.value;
-  if (data.connectionType === 1) d.voltage.value = $data.voltage1.value;
+  if (d.connectionType === 0) d.current.value = d.current1.value;
+  if (d.connectionType === 1) d.voltage.value = d.voltage1.value;
   return d;
-});
+};
 
-ipcRenderer.on('serialData', (e, d) => data.set(d));
+ipcRenderer.on('serialData', (e, d) => data.set(addCalculatedSums(d)));
 ipcRenderer.on(
   'calibrationFinish',
   (e, v) => (criticalHydrogenConcentration = v)
@@ -49,7 +47,6 @@ function getValue(store) {
 
 module.exports = {
   data,
-  commonData,
   isCriticalConcentration,
   getValue,
   appInitialized,

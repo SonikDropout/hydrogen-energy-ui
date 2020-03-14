@@ -3,7 +3,7 @@
   import Select from '../molecules/Select';
   import Toggle from '../atoms/Toggle';
   import RangeInput from '../molecules/RangeInput';
-  import { data, getValue, commonData } from '../stores';
+  import { data, getValue } from '../stores';
   import { COMMANDS, CONSTRAINTS } from '../constants';
   import { ipcRenderer } from 'electron';
   export let onPrev;
@@ -168,14 +168,14 @@
           {#each commonCharacteristics as characteristic}
             <li>
               <span class="label">
-                {@html $commonData[characteristic].symbol}
-                , {$commonData[characteristic].units}
+                {@html $data[characteristic].symbol}
+                , {$data[characteristic].units}
               </span>
               <strong class="value">
-              {#if characteristic.startsWith('current') && $commonData[characteristic].value < 0.04}
+              {#if characteristic.startsWith('current') && $data[characteristic].value < 0.04}
                   &lt; 0.04
                 {:else}
-                  {$commonData[characteristic].value}
+                  {$data[characteristic].value}
                 {/if}
                 </strong>
             </li>

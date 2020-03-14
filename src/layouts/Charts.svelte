@@ -1,5 +1,5 @@
 <script>
-  import { data, commonData } from '../stores';
+  import { data } from '../stores';
   import { CONNECTION_TYPES } from '../constants';
   import Select from '../molecules/Select';
   import Button from '../atoms/Button';
@@ -108,7 +108,7 @@
 
   function subscribeData() {
     timeStart = Date.now();
-    unsubscribeData = commonData.subscribe(d => {
+    unsubscribeData = data.subscribe(d => {
       pStorage.addRow(getEntries(d));
       updateChart();
     });
