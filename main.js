@@ -4,7 +4,7 @@ const url = require('url');
 const electron = require('electron');
 const logger = require('./src/utils/logger');
 const usbPort = require('./src/utils/usbPort');
-const settings = require('./settings.json');
+const settings = require('/home/pi/hydrogen-energy-ui/settings.json');
 const { clone } = require('./src/utils/others');
 const { IS_RPI: isPi, STATE_DATA, FC_DATA } = require('./src/constants');
 const { app, BrowserWindow, ipcMain } = electron;
@@ -47,8 +47,9 @@ function reloadOnChange(win) {
 function onCalibrationFinish(report) {
   return function(criticalConcentration) {
     settings.criticalHydrogenConcentration = criticalConcentration;
-    fs.writeFile('./settings.json', JSON.stringify(settings), () => {
-      report('calibrationFinish');
+    console.log('WRITING SETTINGS TO FILE:', settings);
+    fs.writeFile('/home/pi/hydrogen-energy-ui/settings.json', JSON.stringify(settings), () => {
+      report('calibrationFinish', criticalConcentration);
     });
   };
 }

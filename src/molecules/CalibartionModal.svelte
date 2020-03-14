@@ -1,7 +1,16 @@
+<script>
+  import { ipcRenderer } from 'electron';
+  let highLevel;
+  ipcRenderer.on('calibrationFinish', (e, v) => (highLevel = v));
+</script>
+
 <div class="modal">
   <div class="modal-body">
     <h3>Калибровка датчика водорода...</h3>
     <p>Если вы начали калибровку случайно, перезагрузите стенд</p>
+    {#if highLevel !== void 0}
+      <strong>{highLevel}</strong>
+    {/if}
   </div>
 </div>
 

@@ -25,10 +25,22 @@ usbDetect.on('remove', handleRemove);
 function findDrive() {
   driveList.list().then((drives) => {
     const drive = drives.find(isSuitableDrive);
-    if (drive) {
-      connectedDevice = drive.device;
+    if (!drive) return;
+    connectedDevice = drive.device;
+    if (!drive.mountpoints[0])
+      require('child_process').exec(`sudo mount ${drive.device + 1} /media/usb1`, (error, stdout, stderr) => {
+	if (error) {
+          console.error(error.message)
+	  return
+	}
+	if (stderr) {
+          console.error(stderr)
+	  return
+	}
+	usbPort.emit('add', '/media/usb1');
+    });
+    else 
       usbPort.emit('add', drive.mountpoints[0].path);
-    }
   }).catch(console.error);
 }
 

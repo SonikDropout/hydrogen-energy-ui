@@ -9,7 +9,7 @@
   import { ipcRenderer } from 'electron';
   let state = STATES.initial;
   let showModal = false;
-  ipcRenderer.on('calibrationFinish', () => (showModal = false));
+  ipcRenderer.on('calibrationFinish', () => setTimeout(() => (showModal = false), 2000));
 </script>
 
 <Warnings />

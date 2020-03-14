@@ -1,7 +1,9 @@
 const { writable, derived } = require('svelte/store');
 const { COMMON_DATA } = require('./constants');
 const { ipcRenderer } = require('electron');
-let { criticalHydrogenConcentration } = require('../settings.json');
+const fs = require('fs');
+let { criticalHydrogenConcentration } = JSON.parse(fs.readFileSync('/home/pi/hydrogen-energy-ui/settings.json', 'utf-8'));
+console.log('SAVED CRITICAL CONCENTRATION:', criticalHydrogenConcentration)
 
 const initialData = ipcRenderer.sendSync('initial-data-request');
 

@@ -68,13 +68,17 @@ function close() {
 
 function startCalibration(cb) {
   serial.removeListener('data', handleData);
-  serial.write(Buffer.from([30, 60, 0, 90]));
-  serial.once('data', buf => {
-    if (buf.length === 1) {
+  serial.write(Buffer.from([30, 64, 0, 94]));
+  serial.once('data', handleCalibrationConfirm.bind(null, cb));
+}
+
+function handleCalibrationConfirm(cb, buf) {
+  if (buf.toString('ascii') === 'ok')
+    serial.once('data', buf => {
       cb(buf[0]);
       serial.on('data', handleData);
-    }
-  });
+    });
+  else serial.once('data', handleCalibrationConfirm.bind(null, cb));
 }
 
 emitter.close = close;
