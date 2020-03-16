@@ -52,14 +52,21 @@
   ];
   const loadModeOptions = [
     { label: 'внутр нагрузка отключена', value: 0 },
-    { label: 'постоянное напряжение', name: 'voltage', value: 1, symbol: 'U, B' },
+    {
+      label: 'постоянное напряжение',
+      name: 'voltage',
+      value: 1,
+      symbol: 'U, B',
+    },
     { label: 'постоянный ток', name: 'current', value: 2, symbol: 'I, A' },
     { label: 'постоянная мощность', name: 'power', value: 3, symbol: 'P, Вт' },
   ];
 
-  let selectedLoadMode = loadModeOptions[$data.loadMode];
+  let selectedLoadMode = loadModeOptions[$data.loadMode],
+    selectedConnectionType = 0;
 
   function setConnectionType(t) {
+    selectedConnectionType = t;
     ipcRenderer.send('serialCommand', COMMANDS.switchConnectionType(+t));
   }
   function setLoadMode(m) {
@@ -128,7 +135,7 @@
             <Toggle
               on:change={toggleFC}
               name={pos}
-              disabled={!isActive}
+              disabled={!isActive || selectedConnectionType - 1 === pos}
               checked={valves[pos - 1]} />
           </div>
         </div>
@@ -152,11 +159,9 @@
                   , {$data[characteristic + pos].units}
                 </span>
                 <strong class="value">
-                {#if characteristic == 'current' && $data[characteristic+pos].value < 0.04}
-                  &lt; 0.04
-                {:else}
-                  {$data[characteristic + pos].value}
-                {/if}
+                  {#if characteristic == 'current' && $data[characteristic + pos].value < 0.04}
+                    &lt; 0.04
+                  {:else}{$data[characteristic + pos].value}{/if}
                 </strong>
               </li>
             {/each}
@@ -173,12 +178,10 @@
                 , {$data[characteristic].units}
               </span>
               <strong class="value">
-              {#if characteristic.startsWith('current') && $data[characteristic].value < 0.04}
+                {#if characteristic.startsWith('current') && $data[characteristic].value < 0.04}
                   &lt; 0.04
-                {:else}
-                  {$data[characteristic].value}
-                {/if}
-                </strong>
+                {:else}{$data[characteristic].value}{/if}
+              </strong>
             </li>
           {/each}
         </ul>

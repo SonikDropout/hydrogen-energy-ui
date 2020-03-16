@@ -248,6 +248,7 @@
     align-self: flex-start;
   }
   .spin {
+    height: 2rem;
     animation: spin 1s linear infinite;
   }
 </style>

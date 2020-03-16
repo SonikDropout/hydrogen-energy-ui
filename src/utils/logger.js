@@ -13,7 +13,7 @@ function writeLog({ name, dir, rows, worksheets, headers, cb }) {
   createFile(name);
   addWorksheets(worksheets, headers);
   writeRows(rows);
-  saveFile(dir);
+  saveFile(dir, cb);
 }
 
 function createFile(fileName) {
@@ -50,6 +50,7 @@ function writeRows(entries) {
 }
 
 function saveFile(dir, cb) {
+  console.log('Saving excel to', dir);
   wb.write(path.join(dir, fileName), cb);
   wb = ws = fileName = void 0;
   row = 1;
