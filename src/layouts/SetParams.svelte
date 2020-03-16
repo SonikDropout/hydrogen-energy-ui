@@ -40,7 +40,7 @@
         <div class="input-field">
           <div class="label">Мощность вентилятора, % от макс</div>
           <RangeInput
-            name={pos}
+            name="{pos}"
             onChange={setFanPower}
             range={CONSTRAINTS.fanPower}
             defaultValue={initialData['fanPower' + pos].value} />

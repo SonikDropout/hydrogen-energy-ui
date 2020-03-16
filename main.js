@@ -61,7 +61,7 @@ function initPeripherals(win) {
       ...options,
     })
   );
-  ipcMain.on('serialCommand', (_, ...args) => serial.sendCommand(...args));
+  ipcMain.on('serialCommand', (_, bytes) => serial.sendCommand(bytes));
   ipcMain.on('usbStorageRequest', usbPort.init);
   return {
     removeAllListeners() {

@@ -112,7 +112,7 @@ const COMMANDS = [
   'stop',
 ].reduce(
   (a, c, i) => {
-    a[c] = (i + 1) * 4;
+    a[c] = [(i + 1) * 4, 0];
     return a;
   },
   {

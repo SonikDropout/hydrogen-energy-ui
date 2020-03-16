@@ -15,7 +15,7 @@
   function handleChange(e) {
     clearTimeout(dispatchTimeout);
     value = e.target.value;
-    dispatchTimeout = setTimeout(onChange, 300, value, name);
+    dispatchTimeout = setTimeout(onChange, 300, value, e.target.name);
   }
 
   function increment() {
