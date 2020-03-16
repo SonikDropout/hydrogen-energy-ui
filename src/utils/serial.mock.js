@@ -29,7 +29,7 @@ function randomData() {
   for (let pos of [1, 2]) {
     d['power' + pos] = {
       symbol: 'P',
-      units: 'Вт',
+      units: 'W',
       value:
         d['current' + pos].value * d['voltage' + pos].value,
     };

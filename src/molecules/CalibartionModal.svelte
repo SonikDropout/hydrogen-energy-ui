@@ -6,8 +6,7 @@
 
 <div class="modal">
   <div class="modal-body">
-    <h3>Калибровка датчика водорода...</h3>
-    <p>Если вы начали калибровку случайно, перезагрузите стенд</p>
+    <h3>Wasserstoffsensorkalibrierung...</h3>
     {#if highLevel !== void 0}
       <strong>{highLevel}</strong>
     {/if}
@@ -37,7 +36,7 @@
     align-items: center;
     text-align: center;
   }
-  h3,p {
+  h3 {
     max-width: 80%;
   }
 </style>

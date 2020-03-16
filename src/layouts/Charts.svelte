@@ -33,21 +33,21 @@
     .flat();
 
   const subjectOptions = [
-    { label: 'БТЭ 1', value: 1 },
-    { label: 'БТЭ 2', value: 2 },
-    { label: 'БТЭ 1 + БТЭ 2', value: 'Common' },
+    { label: 'Brennstoffzelle 1', value: 1 },
+    { label: 'Brennstoffzelle 2', value: 2 },
+    { label: 'Brennstoffzelle 1 + Brennstoffzelle 2', value: 'Common' },
   ];
 
   const xOptions = [
-    { name: 'time', label: 'Время', value: 0, symbol: 't, c' },
-    { name: 'current', label: 'Ток', value: 1, symbol: 'I, A' },
-    { name: 'consumption', label: 'Расход', value: 2, symbol: 'Q, мл/мин' },
+    { name: 'time', label: 'Ziet', value: 0, symbol: 't, s' },
+    { name: 'current', label: 'Strom', value: 1, symbol: 'I, A' },
+    { name: 'consumption', label: 'Verbrauch', value: 2, symbol: 'Q, ml/min' },
   ];
 
   const yOptions = [
-    { name: 'voltage', label: 'Напряжение', value: 0, symbol: 'U, B' },
-    { name: 'current', label: 'Ток', value: 1, symbol: 'I, A' },
-    { name: 'power', label: 'Мощность', value: 2, symbol: 'P, Вт' },
+    { name: 'voltage', label: 'Spannung', value: 0, symbol: 'U, V' },
+    { name: 'current', label: 'Strom', value: 1, symbol: 'I, A' },
+    { name: 'power', label: '	Leistung', value: 2, symbol: 'P, W' },
   ];
 
   let selectedX = xOptions[0],
@@ -135,13 +135,13 @@
   function saveFile() {
     ipcRenderer.send('writeExcel', {
       name: selectedX.label + '-' + selectedY.label,
-      worksheets: ['БТЭ1', 'БТЭ2', 'БТЭ1 + БТЭ2'],
+      worksheets: ['Brennstoffzelle 1', 'Brennstoffzelle 2', 'Brennstoffzelle 1 + Brennstoffzelle 2'],
       headers: Array(3).fill([
-        'Вермя, с',
-        'Ток, А',
-        'Напряжение, В',
-        'Мощьность, Вт',
-        'Расход, мл/мин',
+        'Zeit, s',
+        'Strom, A',
+        'Spannung, V',
+        'Leistung, W',
+        'Verbrauch, ml/min',
       ]),
       rows: [
         pStorage.rows.map(row => row.slice(0, 5)),
@@ -155,17 +155,17 @@
 </script>
 
 <div class="layout">
-  <header>Построение графиков</header>
+  <header>Grafische Darstellung</header>
   <main>
     <div class="selects">
-      <div class="label">Тип соединения</div>
+      <div class="label">Anschlussarten</div>
       <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
       <div class="select-field">
-        <span class="select-label">Объект исследования</span>
+        <span class="select-label">Brennstoffzellenauswahl</span>
         <Select order={1} onChange={selectSubject} options={subjectOptions} />
       </div>
       <div class="select-field">
-        <span class="select-label">Ось X</span>
+        <span class="select-label">x-Achse</span>
         <Select
           order={2}
           onChange={selectX}
@@ -173,7 +173,7 @@
           defaultValue={selectedX.value} />
       </div>
       <div class="select-field">
-        <span class="select-label">Ось Y</span>
+        <span class="select-label">y-Achse</span>
         <Select
           order={3}
           onChange={selectY}
@@ -182,7 +182,7 @@
       </div>
 
       <Button on:click={toggleDrawing} disabled={startDisabled}>
-        {isDrawing ? 'Стоп' : 'Старт'}
+        {isDrawing ? 'Stopp' : 'Start'}
       </Button>
     </div>
     <div class="chart">
@@ -191,14 +191,14 @@
   </main>
   <footer>
     <div class="back">
-      <Button on:click={onPrev}>Назад</Button>
+      <Button on:click={onPrev}>Zurück</Button>
     </div>
     <div class="save">
       <Button on:click={saveFile} disabled={saveDisabled}>
         {#if fileSaving}
           <img src="../static/icons/spinner.svg" alt="spinner" class="spin" />
         {/if}
-        Сохранить данные на USB-устройство
+        Export der Daten auf ein USB-Gerät 
       </Button>
     </div>
   </footer>

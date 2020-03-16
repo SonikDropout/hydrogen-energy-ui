@@ -10,11 +10,11 @@ const data = {
   ...clone(FC_DATA),
   power1: {
     symbol: 'P',
-    units: 'Вт',
+    units: 'W',
   },
   power2: {
     symbol: 'P',
-    units: 'Вт',
+    units: 'W',
   },
 };
 

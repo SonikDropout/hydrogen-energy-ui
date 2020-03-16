@@ -24,21 +24,21 @@
 </script>
 
 <div class="layout">
-  <header>Задание параметров работы батарей топливных элементов</header>
+  <header>Einstellung der Betriebsparameter der Brennstoffzelle</header>
   <main>
     {#each columns as { pos }}
       <div class="col">
-        <h2>БТЭ {pos}</h2>
+        <h2>Brennstoffzelle {pos}</h2>
         <img
           src="../static/icons/fuelCell.svg"
           alt="fuelCell"
           class="fc-icon" />
         <figure>
           <img src="../static/icons/fan.svg" alt="fan" />
-          <figcaption>Вентилятор</figcaption>
+          <figcaption>Lüfter</figcaption>
         </figure>
         <div class="input-field">
-          <div class="label">Мощность вентилятора, % от макс</div>
+          <div class="label">Leistung, % vom Maximum</div>
           <RangeInput
             name={pos}
             onChange={setFanPower}
@@ -47,16 +47,16 @@
         </div>
         <figure>
           <img src="../static/icons/valve.svg" alt="valve" />
-          <figcaption>Продувочный клапан</figcaption>
+          <figcaption>Spülventil</figcaption>
         </figure>
         <div class="input-field">
-          <div class="label">Периодичность продувки, с</div>
+          <div class="label">Entlüftungsfrequenz, Sekunde</div>
           <RangeInput
             name={pos}
             onChange={setBlowPeriod}
             range={CONSTRAINTS.blowPeriod}
             defaultValue={initialData['blowPeriod' + pos].value} />
-          <div class="label">Длительность продувки, мс</div>
+          <div class="label">Entlüftungsdauer, Millisekunde</div>
           <RangeInput
             name={pos}
             onChange={setBlowDuration}
@@ -67,7 +67,7 @@
     {/each}
   </main>
   <footer>
-    <Button on:click={onNext}>Перейти к исследованиям</Button>
+    <Button on:click={onNext}>Zu den Untersuchungen übergehen</Button>
   </footer>
 </div>
 

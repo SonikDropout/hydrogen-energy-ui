@@ -8,7 +8,7 @@
 <label>
   <slot />
   <input type="checkbox" {value} {name} on:change bind:checked {disabled} />
-  <span class:disabled class:checked>{checked ? 'вкл' : 'выкл'}</span>
+  <span class:disabled class:checked>{checked ? 'auf' : 'aus'}</span>
 </label>
 
 <style>

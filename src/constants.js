@@ -21,7 +21,7 @@ const LOW_PRESSURE = 0.2;
 const SINGLE_DATA = {
   voltage: {
     symbol: 'U',
-    units: 'В',
+    units: 'V',
     divider: 1000,
   },
   current: {
@@ -40,16 +40,16 @@ const SINGLE_DATA = {
     divider: 10,
   },
   blowDuration: {
-    label: 'Длительность продувки',
-    units: 'мс',
+    label: 'Entlüftungsdauer',
+    units: 'ms',
   },
   blowPeriod: {
-    label: 'Задержка продувки',
-    units: 'с',
+    label: 'Entlüftungsfrequenz',
+    units: 's',
   },
   fanPower: {
-    label: 'Moщность вентилятора',
-    units: '% от макс',
+    label: 'Lüfterleistung',
+    units: '% vom max',
   },
 };
 
@@ -60,12 +60,12 @@ const COMMON_DATA = {
     divider: 10,
   },
   currentExternal: {
-    symbol: 'I<sub>внеш нагр</sub>',
+    symbol: 'I<sub>externe Last</sub>',
     units: 'А',
     divider: 1000,
   },
   currentInternal: {
-    symbol: 'I<sub>внутр нагр</sub>',
+    symbol: 'I<sub>innere Last</sub>',
     units: 'А',
     divider: 1000,
   },
@@ -74,15 +74,15 @@ const COMMON_DATA = {
   },
   consumption1: {
     symbol: 'Q',
-    units: 'мл/мин',
+    units: 'ml/min',
   },
   consumption2: {
     symbol: 'Q',
-    units: 'мл/мин',
+    units: 'ml/min',
   },
   pressure: {
     symbol: 'p',
-    units: 'атм',
+    units: 'bar',
     divider: 1000,
   },
 };
@@ -139,11 +139,11 @@ const CONSTRAINTS = {
 };
 
 const CONNECTION_TYPES = [
-  'Последовательное',
-  'Параллельное',
-  'только БТЭ 1',
-  'только БТЭ 2',
-  'не выбран',
+  'In Reihe',
+  'Parallel',
+  'Betrieb Brennstoffzelle 1',
+  'Betrieb Brennstoffzelle 2',
+  'nicht ausgewählt',
 ];
 
 const SETTINGS_PATH = IS_RPI

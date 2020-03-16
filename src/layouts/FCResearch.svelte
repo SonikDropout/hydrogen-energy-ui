@@ -45,16 +45,21 @@
   ];
 
   const connectionTypeOptions = [
-    { label: 'последовательное', value: 0 },
-    { label: 'параллельное', value: 1 },
-    { label: 'только БТЭ 1', value: 2 },
-    { label: 'только БТЭ 2', value: 3 },
+    { label: 'In Reihe', value: 0 },
+    { label: 'Parallel', value: 1 },
+    { label: 'Betrieb Brennstoffzelle 1', value: 2 },
+    { label: 'Betrieb Brennstoffzelle 2', value: 3 },
   ];
   const loadModeOptions = [
-    { label: 'внутр нагрузка отключена', value: 0 },
-    { label: 'постоянное напряжение', name: 'voltage', value: 1, symbol: 'U, B' },
-    { label: 'постоянный ток', name: 'current', value: 2, symbol: 'I, A' },
-    { label: 'постоянная мощность', name: 'power', value: 3, symbol: 'P, Вт' },
+    { label: 'Innere Last ausgeschaltet', value: 0 },
+    {
+      label: 'Gleichspannung',
+      name: 'voltage',
+      value: 1,
+      symbol: 'U, B',
+    },
+    { label: 'Gleichstrom', name: 'current', value: 2, symbol: 'I, A' },
+    { label: 'Konstante Leistung', name: 'power', value: 3, symbol: 'P, W' },
   ];
 
   let selectedLoadMode = loadModeOptions[$data.loadMode];
@@ -87,18 +92,18 @@
 </script>
 
 <div class="layout">
-  <header>Исследование работы топливных элементов</header>
+  <header>Untersuchung der Funktionalität der Brennstoffzellen</header>
   <main>
     <div class="row first">
       <div class="select-field col">
-        <div class="label">Тип соединения</div>
+        <div class="label">Anschlussarten</div>
         <Select
           onChange={setConnectionType}
           options={connectionTypeOptions}
           defaultValue={$data.connectionType} />
       </div>
       <div class="select-field col">
-        <div class="label">Режим нагрузки</div>
+        <div class="label">Lastmodus</div>
         <Select
           onChange={setLoadMode}
           options={loadModeOptions}
@@ -106,7 +111,7 @@
       </div>
       <div class="load-mode col">
         {#if selectedLoadMode.value}
-          <span class="label">Задать {selectedLoadMode.symbol}</span>
+          <span class="label">{selectedLoadMode.symbol} einstellen</span>
           <RangeInput
             step={selectedLoadMode.value === 2 ? 0.1 : 1}
             onChange={setLoadValue}
@@ -118,12 +123,11 @@
     <div class="row">
       {#each FCColumns as { pos }}
         <div class="col o-{pos}">
-          <h3>БТЭ {pos}</h3>
+          <h3>Brennstoffzelle {pos}</h3>
           <img src="../static/icons/valve.svg" alt="valve" class="icon-valve" />
           <div class="fc-toggler">
             <div class="label">
-              Клапан подачи H
-              <sub>2</sub>
+              H<sub>2</sub>-Zufuhr-Ventil
             </div>
             <Toggle
               on:change={toggleFC}
@@ -135,15 +139,15 @@
       {/each}
       <div class="col onoff">
         <Button on:click={toggleAll} class="start">
-          {isActive ? 'Стоп' : 'Старт'}
+          {isActive ? 'Stopp' : 'Start'}
         </Button>
       </div>
     </div>
-    <h2>Характеристики работы</h2>
+    <h2>Betriebsparameter</h2>
     <div class="row">
       {#each FCColumns as { pos, characteristics }}
         <div class="col o-{pos}">
-          <h4>БТЭ {pos}</h4>
+          <h4>Brennstoffzelle {pos}</h4>
           <ul class="single">
             {#each characteristics as characteristic}
               <li>
@@ -152,11 +156,9 @@
                   , {$data[characteristic + pos].units}
                 </span>
                 <strong class="value">
-                {#if characteristic == 'current' && $data[characteristic+pos].value < 0.04}
-                  &lt; 0.04
-                {:else}
-                  {$data[characteristic + pos].value}
-                {/if}
+                  {#if characteristic == 'current' && $data[characteristic + pos].value < 0.04}
+                    &lt; 0.04
+                  {:else}{$data[characteristic + pos].value}{/if}
                 </strong>
               </li>
             {/each}
@@ -164,7 +166,7 @@
         </div>
       {/each}
       <div class="col">
-        <h4>Общие</h4>
+        <h4>Allgemeine</h4>
         <ul class="common">
           {#each commonCharacteristics as characteristic}
             <li>
@@ -173,12 +175,10 @@
                 , {$data[characteristic].units}
               </span>
               <strong class="value">
-              {#if characteristic.startsWith('current') && $data[characteristic].value < 0.04}
+                {#if characteristic.startsWith('current') && $data[characteristic].value < 0.04}
                   &lt; 0.04
-                {:else}
-                  {$data[characteristic].value}
-                {/if}
-                </strong>
+                {:else}{$data[characteristic].value}{/if}
+              </strong>
             </li>
           {/each}
         </ul>
@@ -187,10 +187,10 @@
   </main>
   <footer class="row">
     <div class="col">
-      <Button on:click={onPrev}>Назад</Button>
+      <Button on:click={onPrev}>Zurück</Button>
     </div>
     <div class="col">
-      <Button on:click={onNext}>Построение графиков</Button>
+      <Button on:click={onNext}>Grafische Darstellung</Button>
     </div>
     <div class="col" />
   </footer>
