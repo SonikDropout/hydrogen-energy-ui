@@ -9,6 +9,7 @@
   import configureChart from './chart.config';
   import { onMount } from 'svelte';
   import PointsStorage from '../utils/PointsStorage';
+  import { fly } from 'svelte/transition';
   export let onPrev;
 
   onMount(() => {
@@ -23,8 +24,8 @@
   });
 
   ipcRenderer.send('usbStorageRequest');
-  ipcRenderer.on('usbConnected', () => (saveDisabled = false));
-  ipcRenderer.on('usbDisconnected', () => (saveDisabled = true));
+  ipcRenderer.on('usbConnected', () => (usbAttached = true));
+  ipcRenderer.on('usbDisconnected', () => (usbAttached = false));
 
   const pointEntries = [1, 2, 'Common']
     .map(name =>
@@ -53,10 +54,12 @@
   let selectedX = xOptions[0],
     selectedY = yOptions[0],
     pStorage = new PointsStorage(),
-    saveDisabled = true,
+    usbAttached = false,
+    noData = true,
     selectedSubject,
     isDrawing,
     unsubscribeData,
+    saveMessage,
     chart,
     fileSaving,
     timeStart;
@@ -105,6 +108,7 @@
   function subscribeData() {
     pStorage.clear();
     timeStart = Date.now();
+    noData = false;
     unsubscribeData = data.subscribe(d => {
       pStorage.addRow(getEntries(d));
       updateChart();
@@ -123,7 +127,7 @@
 
   function saveFile() {
     ipcRenderer.send('writeExcel', {
-      name: selectedX.label + '-' + selectedY.label,
+      name: `УМВЭ_${selectedX.label}-${selectedY.label}`,
       worksheets: ['БТЭ1', 'БТЭ2', 'БТЭ1 + БТЭ2'],
       headers: Array(3).fill([
         'Вермя, с',
@@ -132,14 +136,27 @@
         'Мощность, Вт',
         'Расход, мл/мин',
       ]),
-      row: pStorage.rows.map(row => [
+      rows: pStorage.rows.map(row => [
         row.slice(0, 5),
         [row[0], ...row.slice(5, 9)],
         [row[0], ...row.slice(9, 13)],
       ]),
     });
     fileSaving = true;
-    ipcRenderer.once('fileSaved', () => (fileSaving = false));
+    ipcRenderer.once('fileSaved', (e, err) => {
+      fileSaving = false;
+      if (err) saveMessage = 'Не удалось сохранить файл';
+      else saveMessage = 'Файл успешно сохранен';
+    });
+  }
+
+  function ejectUsb() {
+    ipcRenderer.send('ejectUSB');
+    ipcRenderer.once('usbEjected', () => (saveMessage = ''));
+  }
+
+  function closePopup() {
+    saveMessage = '';
   }
 </script>
 
@@ -183,13 +200,20 @@
       <Button on:click={onPrev}>Назад</Button>
     </div>
     <div class="save">
-      <Button on:click={saveFile} disabled={saveDisabled || !pStorage.rows.length}>
+      <Button on:click={saveFile} disabled={!usbAttached || noData}>
         {#if fileSaving}
           <img src="../static/icons/spinner.svg" alt="spinner" class="spin" />
         {/if}
         Сохранить данные на USB-устройство
       </Button>
     </div>
+    {#if saveMessage}
+      <div class="popup" transition:fly={{ y: -100 }}>
+        <button class="popup-close" on:click={closePopup}>&#x2573;</button>
+        <p>{saveMessage}</p>
+        <Button size="sm" on:click={ejectUsb}>Извлечь usb-устройство</Button>
+      </div>
+    {/if}
   </footer>
 </div>
 
@@ -237,7 +261,26 @@
     align-self: flex-start;
   }
   .spin {
-    height: 2rem;
+    height: 1.6rem;
     animation: spin 1s linear infinite;
+  }
+  .popup {
+    position: absolute;
+    background-color: var(--bg-color);
+    top: 3px;
+    left: calc(50% - 15rem);
+    width: 30rem;
+    padding: 0 2rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0 0 6px -1px var(--text-color);
+  }
+  .popup-close {
+    background-color: transparent;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: none;
+    outline: none;
+    font-size: 1rem;
   }
 </style>
