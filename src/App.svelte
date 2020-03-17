@@ -11,7 +11,7 @@
   import RangeInput from './molecules/RangeInput';
   let slide = 0;
   let showModal = false,
-    startX;
+    startX, dragDiff;
   ipcRenderer.on('calibrationFinish', () =>
     setTimeout(() => (showModal = false), 2000)
   );
@@ -26,7 +26,7 @@
   }
 
   function drag(e) {
-    dragDiff = e.changedTouches[0].clientX - startX;
+    dragDiff = startX - e.changedTouches[0].clientX;
   }
 
   function endDrag(e) {
