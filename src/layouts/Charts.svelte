@@ -152,7 +152,10 @@
 
   function ejectUsb() {
     ipcRenderer.send('ejectUSB');
-    ipcRenderer.once('usbEjected', () => (saveMessage = ''));
+    ipcRenderer.once('usbEjected', () => {
+      saveMessage = '';
+      usbAttached = false;
+    });
   }
 
   function closePopup() {
