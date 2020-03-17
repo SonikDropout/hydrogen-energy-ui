@@ -35,8 +35,7 @@ function handleData(buf) {
 let commandQueue = [];
 let portBusy = false;
 
-function sendCommand(bytes) {
-  let [byte1, byte2] = isNaN(bytes) ? bytes : [bytes, 0];
+function sendCommand([byte1, byte2]) {
   commandQueue.push(Buffer.from([30, byte1, byte2, byte1 + byte2 + 30]));
   if (!portBusy) {
     portBusy = true;

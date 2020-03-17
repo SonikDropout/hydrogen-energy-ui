@@ -13,11 +13,11 @@ function writeLog({ name, dir, rows, worksheets, headers, cb }) {
   createFile(name);
   addWorksheets(worksheets, headers);
   writeRows(rows);
-  saveFile(dir);
+  saveFile(dir, cb);
 }
 
-function createFile(fileName) {
-  fileName = fileName + '_' + getFileDate();
+function createFile(fn) {
+  fileName = fn + '_' + getFileDate();
   wb = new Workbook();
   if (!headerStyle) createStyles();
 }
@@ -39,19 +39,20 @@ function writeRows(entries) {
   for (let i = 0; i < entries.length; i++) {
     for (let j = 0; j < entries[i].length; ++j) {
       for (let k = 0; k < entries[i][j].length; ++k) {
-        ws[i]
+        ws[j]
           .cell(row, k + 1)
           .number(entries[i][j][k])
           .style(dataStyle);
       }
     }
+    row++;
   }
-  row++;
 }
 
 function saveFile(dir, cb) {
-  wb.write(path.join(dir, fileName), cb);
-  wb = ws = fileName = void 0;
+  wb.write(path.join(dir, fileName + '.xlsx'), cb);
+  wb = fileName = void 0;
+  ws = [];
   row = 1;
 }
 

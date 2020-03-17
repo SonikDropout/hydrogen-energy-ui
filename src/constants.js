@@ -26,7 +26,7 @@ const SINGLE_DATA = {
   },
   current: {
     symbol: 'I',
-    units: 'А',
+    units: 'A',
     divider: 1000,
   },
   temp1: {
@@ -61,12 +61,12 @@ const COMMON_DATA = {
   },
   currentExternal: {
     symbol: 'I<sub>externe Last</sub>',
-    units: 'А',
+    units: 'A',
     divider: 1000,
   },
   currentInternal: {
     symbol: 'I<sub>innere Last</sub>',
-    units: 'А',
+    units: 'A',
     divider: 1000,
   },
   loadValue: {
@@ -112,7 +112,7 @@ const COMMANDS = [
   'stop',
 ].reduce(
   (a, c, i) => {
-    a[c] = (i + 1) * 4;
+    a[c] = [(i + 1) * 4, 0];
     return a;
   },
   {

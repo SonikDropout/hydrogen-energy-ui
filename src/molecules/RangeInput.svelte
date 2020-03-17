@@ -14,8 +14,8 @@
 
   function handleChange(e) {
     clearTimeout(dispatchTimeout);
-    value = e.target.value;
-    dispatchTimeout = setTimeout(onChange, 300, value, name);
+    value = +e.target.value;
+    dispatchTimeout = setTimeout(onChange, 300, +value, e.target.name);
   }
 
   function increment() {
@@ -118,6 +118,6 @@
   }
   .arrow {
     display: block;
-    transform: scale(3) rotate(90deg);
+    transform: scale(2) rotate(90deg);
   }
 </style>

@@ -62,9 +62,11 @@
     { label: 'Konstante Leistung', name: 'power', value: 3, symbol: 'P, W' },
   ];
 
-  let selectedLoadMode = loadModeOptions[$data.loadMode];
+  let selectedLoadMode = loadModeOptions[$data.loadMode],
+    selectedConnectionType = 0;
 
   function setConnectionType(t) {
+    selectedConnectionType = t;
     ipcRenderer.send('serialCommand', COMMANDS.switchConnectionType(+t));
   }
   function setLoadMode(m) {
@@ -132,7 +134,7 @@
             <Toggle
               on:change={toggleFC}
               name={pos}
-              disabled={!isActive}
+              disabled={!isActive || selectedConnectionType - 1 === pos}
               checked={valves[pos - 1]} />
           </div>
         </div>
