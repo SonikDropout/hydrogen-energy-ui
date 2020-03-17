@@ -39,7 +39,7 @@ function handleDrives(drives) {
 }
 
 function mountDevice(device) {
-  exec(`sudo mount ${device + 1} /media/usb1`, (error, stdout, stderr) => {
+  exec(`sudo mkdir /media/usb1\nsudo mount ${device + 1} /media/usb1`, (error, stdout, stderr) => {
     if (error) {
       console.error(error.message);
       return;
