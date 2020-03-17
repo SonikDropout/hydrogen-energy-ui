@@ -42,7 +42,7 @@
     <CalibartionModal />
   {/if}
   <div
-    class="content {slide}"
+    class="content slide-{slide}"
     on:touchstart={startDrag}
     on:touchmove={drag}
     on:touchend={endDrag}>
@@ -66,10 +66,10 @@
     display: flex;
     transition: 0.3s ease-in-out;
   }
-  .content.research {
+  .content.slide-1 {
     transform: translateX(-100vw);
   }
-  .content.charts {
+  .content.slide-2 {
     transform: translateX(-200vw);
   }
 </style>
