@@ -145,7 +145,10 @@
     fileSaving = true;
     ipcRenderer.once('fileSaved', (e, err) => {
       fileSaving = false;
-      if (err) saveMessage = 'Speichern der Datei fehlgeschlagen';
+      if (err) {
+        saveMessage = 'Speichern der Datei fehlgeschlagen';
+        console.error(err);
+      }
       else saveMessage = 'Erfolg beim Speichern von Dateien';
     });
   }

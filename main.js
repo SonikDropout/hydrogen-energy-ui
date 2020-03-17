@@ -58,7 +58,7 @@ function initPeripherals(win) {
     try {
       logger.writeLog({
         dir: usbPath,
-        cb: () => win.webContents.send('fileSaved'),
+        cb: (e) => win.webContents.send('fileSaved', e),
         ...options,
       });
     } catch (e) {
