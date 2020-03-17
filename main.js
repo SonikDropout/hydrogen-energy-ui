@@ -62,6 +62,7 @@ function initPeripherals(win) {
         ...options,
       });
     } catch (e) {
+      console.error(e);
       win.webContents.send('fileSaved', e);
     }
   });

@@ -20,18 +20,11 @@
       flag => flag && document.getElementById('initial-screen').remove()
     )
   );
-
-  function startDrag(e) {
-    startX = e.touches[0].clientX;
+  function incrementSlide() {
+    slide += slide < 2 ? 1 : 0;
   }
-
-  function drag(e) {
-    dragDiff = startX - e.changedTouches[0].clientX;
-  }
-
-  function endDrag(e) {
-    if (dragDiff > 100) slide += slide < 2 ? 1 : 0;
-    else if (dragDiff < -100) slide -= slide > 0 ? 1 : 0;
+  function decrementSlide() {
+    slide -= slide > 0 ? 1 : 0;
   }
 </script>
 
@@ -41,14 +34,10 @@
   {#if showModal}
     <CalibartionModal />
   {/if}
-  <div
-    class="content slide-{slide}"
-    on:touchstart={startDrag}
-    on:touchmove={drag}
-    on:touchend={endDrag}>
-    <SetParams onNext={() => ++slide} />
-    <FCResearch onNext={() => ++slide} onPrev={() => --slide} />
-    <Charts onPrev={() => --slide} />
+  <div class="content slide-{slide}">
+    <SetParams onNext={incrementSlide} />
+    <FCResearch onNext={incrementSlide} onPrev={decrementSlide} />
+    <Charts onPrev={decrementSlide} />
   </div>
 {/if}
 
