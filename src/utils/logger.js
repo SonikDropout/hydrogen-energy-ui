@@ -16,8 +16,8 @@ function writeLog({ name, dir, rows, worksheets, headers, cb }) {
   saveFile(dir, cb);
 }
 
-function createFile(fileName) {
-  fileName = fileName + '_' + getFileDate();
+function createFile(fn) {
+  fileName = fn + '_' + getFileDate();
   wb = new Workbook();
   if (!headerStyle) createStyles();
 }
@@ -50,8 +50,9 @@ function writeRows(entries) {
 }
 
 function saveFile(dir, cb) {
-  wb.write(path.join(dir, fileName), cb);
-  wb = ws = fileName = void 0;
+  wb.write(path.join(dir, fileName + '.xlsx'), cb);
+  wb = fileName = void 0;
+  ws = [];
   row = 1;
 }
 

@@ -2,6 +2,7 @@
   export let className;
   export let disabled;
   export let name;
+  export let size = "md";
 </script>
 
 <style>
@@ -32,8 +33,13 @@
   button :global(.icon) {
     font-size: 1.8rem;
   }
+
+  button.sm {
+    padding: .5rem 1rem;
+    font-size: 1.2rem;
+  }
 </style>
 
-<button {disabled} class={className} {name} on:click>
+<button {disabled} class="{className} {size}" {name} on:click>
   <slot />
 </button>

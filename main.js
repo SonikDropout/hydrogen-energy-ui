@@ -54,15 +54,22 @@ function initPeripherals(win) {
   ipcMain.on('calibrationStart', e =>
     serial.startCalibration(onCalibrationFinish(e.reply))
   );
-  ipcMain.on('writeExcel', (_, options) =>
-    logger.writeLog({
-      dir: usbPath,
-      cb: () => win.webContents.send('fileSaved'),
-      ...options,
-    })
-  );
+  ipcMain.on('writeExcel', (_, options) => {
+    try {
+      logger.writeLog({
+        dir: usbPath,
+        cb: () => win.webContents.send('fileSaved'),
+        ...options,
+      });
+    } catch (e) {
+      win.webContents.send('fileSaved', e);
+    }
+  });
   ipcMain.on('serialCommand', (_, bytes) => serial.sendCommand(bytes));
   ipcMain.on('usbStorageRequest', usbPort.init);
+  ipcMain.on('ejectUSB', () =>
+    usbPort.eject(() => win.webContents.send('usbEjected'))
+  );
   return {
     removeAllListeners() {
       usbPort.removeAllListeners();
