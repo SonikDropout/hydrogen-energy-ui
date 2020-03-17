@@ -39,18 +39,17 @@ function writeRows(entries) {
   for (let i = 0; i < entries.length; i++) {
     for (let j = 0; j < entries[i].length; ++j) {
       for (let k = 0; k < entries[i][j].length; ++k) {
-        ws[i]
+        ws[j]
           .cell(row, k + 1)
           .number(entries[i][j][k])
           .style(dataStyle);
       }
     }
+    row++;
   }
-  row++;
 }
 
 function saveFile(dir, cb) {
-  console.log('Saving excel to', dir);
   wb.write(path.join(dir, fileName), cb);
   wb = ws = fileName = void 0;
   row = 1;

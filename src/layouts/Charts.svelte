@@ -96,25 +96,14 @@
   function toggleDrawing() {
     if (isDrawing) {
       unsubscribeData();
-      stopDrawing();
     } else {
-      startLogging();
       subscribeData();
     }
     isDrawing = !isDrawing;
   }
 
-  function startLogging() {
-    const fileName = selectedX.label + '-' + selectedY.label;
-    const headers = [selectedX.symbol, selectedY.symbol];
-    ipcRenderer.send('startFileWrite', fileName, headers);
-  }
-
-  function stopDrawing() {
-    pStorage.clear();
-  }
-
   function subscribeData() {
+    pStorage.clear();
     timeStart = Date.now();
     unsubscribeData = data.subscribe(d => {
       pStorage.addRow(getEntries(d));
@@ -140,14 +129,14 @@
         'Вермя, с',
         'Ток, А',
         'Напряжение, В',
-        'Мощьность, Вт',
+        'Мощность, Вт',
         'Расход, мл/мин',
       ]),
-      rows: [
-        pStorage.rows.map(row => row.slice(0, 5)),
-        pStorage.rows.map(row => [row[0], ...row.slice(5, 9)]),
-        pStorage.rows.map(row => [row[0], ...row.slice(9, 13)]),
-      ],
+      row: pStorage.rows.map(row => [
+        row.slice(0, 5),
+        [row[0], ...row.slice(5, 9)],
+        [row[0], ...row.slice(9, 13)],
+      ]),
     });
     fileSaving = true;
     ipcRenderer.once('fileSaved', () => (fileSaving = false));
@@ -194,7 +183,7 @@
       <Button on:click={onPrev}>Назад</Button>
     </div>
     <div class="save">
-      <Button on:click={saveFile} disabled={saveDisabled}>
+      <Button on:click={saveFile} disabled={saveDisabled || !pStorage.rows.length}>
         {#if fileSaving}
           <img src="../static/icons/spinner.svg" alt="spinner" class="spin" />
         {/if}
