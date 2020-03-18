@@ -55,7 +55,7 @@
     {#if optionsVisible}
       <ul transition:drop>
         {#each options as { icon, label, value }}
-          <li data-value={value} on:click={selectOption}>
+          <li data-value={value} on:click={selectOption} title={label}>
             {#if icon}
               <i class="icon icon-{icon}" />
             {/if}
@@ -123,6 +123,9 @@
     padding: 0 1rem;
     line-height: 3.2rem;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   ul {

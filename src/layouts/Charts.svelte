@@ -172,10 +172,8 @@
     <div class="selects">
       <div class="label">Anschlussarten</div>
       <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
-      <div class="select-field">
-        <span class="select-label">Brennstoffzellenauswahl</span>
+        <div class="label">Brennstoffzellenauswahl</div>
         <Select order={1} onChange={selectSubject} options={subjectOptions} />
-      </div>
       <div class="select-field">
         <span class="select-label">x-Achse</span>
         <Select
@@ -253,7 +251,7 @@
     margin-bottom: auto;
   }
   .select-field {
-    margin: 1rem 0;
+    margin-top: 2rem;
     display: flex;
   }
   .select-label {
