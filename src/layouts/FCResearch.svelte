@@ -63,15 +63,19 @@
   ];
 
   let selectedLoadMode = loadModeOptions[$data.loadMode],
+    loadValue = $data.loadValue.value,
     selectedConnectionType = 0;
 
   function setConnectionType(t) {
     selectedConnectionType = t;
+    if (t == 2) valves[1] = 0;
+    if (t == 3) valves[0] = 0;
     ipcRenderer.send('serialCommand', COMMANDS.switchConnectionType(+t));
   }
   function setLoadMode(m) {
     selectedLoadMode = loadModeOptions[m];
     ipcRenderer.send('serialCommand', COMMANDS.switchLoadMode(+m));
+    setTimeout(() => (loadValue = $data.loadValue.value), 1500);
   }
   function setLoadValue(v) {
     ipcRenderer.send('serialCommand', COMMANDS.setValue(+v));
@@ -115,9 +119,9 @@
         {#if selectedLoadMode.value}
           <span class="label">Задать {selectedLoadMode.symbol}</span>
           <RangeInput
-            step={selectedLoadMode.value === 2 ? 0.1 : 1}
+            step={0.1}
             onChange={setLoadValue}
-            defaultValue={$data.loadValue.value}
+            defaultValue={loadValue}
             range={CONSTRAINTS[selectedLoadMode.name]} />
         {/if}
       </div>
@@ -135,7 +139,7 @@
             <Toggle
               on:change={toggleFC}
               name={pos}
-              disabled={!isActive || selectedConnectionType - 1 === pos}
+              disabled={!isActive || Math.abs(selectedConnectionType - 3) === pos - 1}
               checked={valves[pos - 1]} />
           </div>
         </div>
