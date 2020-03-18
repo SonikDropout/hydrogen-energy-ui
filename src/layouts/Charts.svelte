@@ -48,7 +48,7 @@
   const yOptions = [
     { name: 'voltage', label: 'Spannung', value: 0, symbol: 'U, V' },
     { name: 'current', label: 'Strom', value: 1, symbol: 'I, A' },
-    { name: 'power', label: '	Leistung', value: 2, symbol: 'P, W' },
+    { name: 'power', label: 'Leistung', value: 2, symbol: 'P, W' },
   ];
 
   let selectedX = xOptions[0],
