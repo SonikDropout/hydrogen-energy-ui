@@ -15,6 +15,10 @@ echo '/opt/hydrogen-enrgy/HydrogenEnergy' > ~/.xinitrc
 chmod +x ~/.xinitrc
 
 
+mkdir /media/usb1
+chown -R pi /media/usb1
+
+
 # BOOT SPEED OPTIMIZATIONS
 echo "enable_uart=1" >> /boot/config.txt
 
