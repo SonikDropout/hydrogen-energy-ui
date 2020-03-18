@@ -131,11 +131,11 @@ const COMMANDS = [
 
 const CONSTRAINTS = {
   current: [0.1, 5],
-  voltage: [3, 15],
+  voltage: [6, 15],
   power: [1, 20],
   fanPower: [5, 100],
   blowDuration: [20, 250],
-  blowPeriod: [1, 200],
+  blowPeriod: [1, 100],
 };
 
 const CONNECTION_TYPES = [

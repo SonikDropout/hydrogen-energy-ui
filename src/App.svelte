@@ -9,6 +9,7 @@
   import { ipcRenderer } from 'electron';
   import { appInitialized } from './stores';
   import RangeInput from './molecules/RangeInput';
+  import {version} from '../package.json'
   let slide = 0;
   let showModal = false,
     startX, dragDiff;
@@ -28,6 +29,7 @@
   }
 </script>
 
+<div class="version">v {version}</div>
 {#if $appInitialized}
   <Warnings />
   <CalibartionButton onClick={() => (showModal = true)} />
@@ -42,13 +44,11 @@
 {/if}
 
 <style>
-  .intial {
-    width: 100vw;
-    height: 100vh;
-    background-color: black;
-    color: white;
-    text-align: center;
-    font-size: 3.2rem;
+  .version {
+    font-size: 1rem;
+    color: #999;
+    position: fixed;
+    padding: 0.4rem 0.8rem;
   }
   .content {
     width: 300vw;
