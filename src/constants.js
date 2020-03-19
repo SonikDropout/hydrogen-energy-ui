@@ -130,9 +130,15 @@ const COMMANDS = [
 );
 
 const CONSTRAINTS = {
-  current: [0.1, 5],
-  voltage: [6, 15],
-  power: [1, 20],
+  currentSeries: [0.1, 5],
+  currentSingle: [0.1, 5],
+  currentParallel: [0.1, 5],
+  voltageSeries: [8, 24],
+  voltageSingle: [6, 15],
+  voltageParallel: [6, 15],
+  powerSingle: [1, 30],
+  powerParallel: [1, 30],
+  powerSeries: [1, 30],
   fanPower: [5, 100],
   blowDuration: [20, 250],
   blowPeriod: [1, 100],

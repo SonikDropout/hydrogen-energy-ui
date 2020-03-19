@@ -1,6 +1,7 @@
 <script>
   import Button from '../atoms/Button';
   import Select from '../molecules/Select';
+  import ControledSelect from '../molecules/ControlledSelect';
   import Toggle from '../atoms/Toggle';
   import RangeInput from '../molecules/RangeInput';
   import { data } from '../stores';
@@ -45,10 +46,10 @@
   ];
 
   const connectionTypeOptions = [
-    { label: 'In Reihe', value: 0 },
-    { label: 'Parallel', value: 1 },
-    { label: 'Betrieb Brennstoffzelle 1', value: 2 },
-    { label: 'Betrieb Brennstoffzelle 2', value: 3 },
+    { name: 'Series', label: 'In Reihe', value: 0 },
+    { name: 'Parallel', label: 'Parallel', value: 1 },
+    { name: 'Single', label: 'Betrieb Brennstoffzelle 1', value: 2 },
+    { name: 'Single', label: 'Betrieb Brennstoffzelle 2', value: 3 },
   ];
   const loadModeOptions = [
     { label: 'Innere Last ausgeschaltet', value: 0 },
@@ -56,7 +57,7 @@
       label: 'Gleichspannung',
       name: 'voltage',
       value: 1,
-      symbol: 'U, B',
+      symbol: 'U, V',
     },
     { label: 'Gleichstrom', name: 'current', value: 2, symbol: 'I, A' },
     { label: 'Konstante Leistung', name: 'power', value: 3, symbol: 'P, W' },
@@ -64,12 +65,13 @@
 
   let selectedLoadMode = loadModeOptions[$data.loadMode],
     loadValue = $data.loadValue.value,
-    selectedConnectionType = 0;
+    selectedConnectionType = connectionTypeOptions[0];
 
   function setConnectionType(t) {
-    selectedConnectionType = t;
+    selectedConnectionType = connectionTypeOptions[t];
     if (t == 2) valves[1] = 0;
     if (t == 3) valves[0] = 0;
+    selectedLoadMode = loadModeOptions[0];
     ipcRenderer.send('serialCommand', COMMANDS.switchConnectionType(+t));
   }
   function setLoadMode(m) {
@@ -110,10 +112,10 @@
       </div>
       <div class="select-field col">
         <div class="label">Lastmodus</div>
-        <Select
+        <ControledSelect
           onChange={setLoadMode}
           options={loadModeOptions}
-          defaultValue={$data.loadMode} />
+          selected={selectedLoadMode} />
       </div>
       <div class="load-mode col">
         {#if selectedLoadMode.value}
@@ -122,7 +124,7 @@
             step={0.1}
             onChange={setLoadValue}
             defaultValue={loadValue}
-            range={CONSTRAINTS[selectedLoadMode.name]} />
+            range={CONSTRAINTS[selectedLoadMode.name + selectedConnectionType.name]} />
         {/if}
       </div>
     </div>
@@ -133,12 +135,14 @@
           <img src="../static/icons/valve.svg" alt="valve" class="icon-valve" />
           <div class="fc-toggler">
             <div class="label">
-              H<sub>2</sub>-Zufuhr-Ventil
+              H
+              <sub>2</sub>
+              -Zufuhr-Ventil
             </div>
             <Toggle
               on:change={toggleFC}
               name={pos}
-              disabled={!isActive || Math.abs(selectedConnectionType - 3) === pos - 1}
+              disabled={!isActive || Math.abs(selectedConnectionType.value - 3) === pos - 1}
               checked={valves[pos - 1]} />
           </div>
         </div>
@@ -203,6 +207,9 @@
 </div>
 
 <style>
+  .label {
+    white-space: nowrap;
+  }
   .row {
     display: flex;
     justify-content: space-evenly;
