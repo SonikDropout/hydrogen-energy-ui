@@ -1,11 +1,10 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
+  import { __ } from '../constants';
   export let onChange;
   export let options;
   export let disabled;
-  export let selected = {
-    label: '-- nicht ausgewählt --',
-  };
+  export let selected = { label: __('select') };
   export let order = 0;
 
   onMount(() => document.addEventListener('click', handleClickOutside));

@@ -5,7 +5,7 @@
   import Toggle from '../atoms/Toggle';
   import RangeInput from '../molecules/RangeInput';
   import { data } from '../stores';
-  import { COMMANDS, CONSTRAINTS } from '../constants';
+  import { COMMANDS, CONSTRAINTS, __ } from '../constants';
   import { ipcRenderer } from 'electron';
   export let onPrev;
   export let onNext;
@@ -46,21 +46,21 @@
   ];
 
   const connectionTypeOptions = [
-    { name: 'Series', label: 'последовательное', value: 0 },
-    { name: 'Parallel', label: 'параллельное', value: 1 },
-    { name: 'Single', label: 'только БТЭ 1', value: 2 },
-    { name: 'Single', label: 'только БТЭ 2', value: 3 },
+    { name: 'Series', label: __('series'), value: 0 },
+    { name: 'Parallel', label: __('parallel'), value: 1 },
+    { name: 'Single', label: __('only first'), value: 2 },
+    { name: 'Single', label: __('only second'), value: 3 },
   ];
   const loadModeOptions = [
-    { label: 'внутр нагрузка отключена', value: 0 },
+    { label: __('internal load disabled'), value: 0 },
     {
-      label: 'постоянное напряжение',
+      label: __('constant voltage'),
       name: 'voltage',
       value: 1,
-      symbol: 'U, V',
+      symbol: `U, ${__('V')}`,
     },
-    { label: 'постоянный ток', name: 'current', value: 2, symbol: 'I, A' },
-    { label: 'постоянная мощность', name: 'power', value: 3, symbol: 'P, Вт' },
+    { label:  __('constant current'), name: 'current', value: 2, symbol: 'I, A' },
+    { label:  __('constant power'), name: 'power', value: 3, symbol: `P, ${__('W')}` },
   ];
 
   let selectedLoadMode = loadModeOptions[$data.loadMode],
@@ -100,18 +100,18 @@
 </script>
 
 <div class="layout">
-  <header>Исследование работы топливных элементов</header>
+  <header>{__('fuel cell research')}</header>
   <main>
     <div class="row first">
       <div class="select-field col">
-        <div class="label">Тип соединения</div>
+        <div class="label">{__('connection type')}</div>
         <Select
           onChange={setConnectionType}
           options={connectionTypeOptions}
           defaultValue={$data.connectionType} />
       </div>
       <div class="select-field col">
-        <div class="label">Режим нагрузки</div>
+        <div class="label">{__('load mode')}</div>
         <ControledSelect
           onChange={setLoadMode}
           options={loadModeOptions}
@@ -119,7 +119,7 @@
       </div>
       <div class="load-mode col">
         {#if selectedLoadMode.value}
-          <span class="label">Задать {selectedLoadMode.symbol}</span>
+          <span class="label">{__('set')} {selectedLoadMode.symbol}</span>
           <RangeInput
             step={0.1}
             onChange={setLoadValue}
@@ -131,12 +131,11 @@
     <div class="row">
       {#each FCColumns as { pos }}
         <div class="col o-{pos}">
-          <h3>БТЭ {pos}</h3>
+          <h3>{__('fuel cell')} {pos}</h3>
           <img src="../static/icons/valve.svg" alt="valve" class="icon-valve" />
           <div class="fc-toggler">
             <div class="label">
-              Клапан подачи H
-              <sub>2</sub>
+              {@html __('H2 valve')}
             </div>
             <Toggle
               on:change={toggleFC}
@@ -148,15 +147,15 @@
       {/each}
       <div class="col onoff">
         <Button on:click={toggleAll} class="start">
-          {isActive ? 'Стоп' : 'Старт'}
+          {isActive ? __('stop') : __('start')}
         </Button>
       </div>
     </div>
-    <h2>Характеристики работы</h2>
+    <h2>{__('characteristics')}</h2>
     <div class="row">
       {#each FCColumns as { pos, characteristics }}
         <div class="col o-{pos}">
-          <h4>БТЭ {pos}</h4>
+          <h4>{__('fuel cell')} {pos}</h4>
           <ul class="single">
             {#each characteristics as characteristic}
               <li>
@@ -175,7 +174,7 @@
         </div>
       {/each}
       <div class="col">
-        <h4>Общие</h4>
+        <h4>{__('common')}</h4>
         <ul class="common">
           {#each commonCharacteristics as characteristic}
             <li>
@@ -196,10 +195,10 @@
   </main>
   <footer class="row">
     <div class="col">
-      <Button on:click={onPrev}>Назад</Button>
+      <Button on:click={onPrev}>{__('back')}</Button>
     </div>
     <div class="col">
-      <Button on:click={onNext}>Построение графиков</Button>
+      <Button on:click={onNext}>{__('charts')}</Button>
     </div>
     <div class="col" />
   </footer>

@@ -1,6 +1,6 @@
 <script>
   import { data } from '../stores';
-  import { CONNECTION_TYPES } from '../constants';
+  import { CONNECTION_TYPES, __ } from '../constants';
   import Select from '../molecules/Select';
   import Button from '../atoms/Button';
   import { ipcRenderer } from 'electron';
@@ -34,21 +34,21 @@
     .flat();
 
   const subjectOptions = [
-    { label: 'БТЭ 1', value: 1 },
-    { label: 'БТЭ 2', value: 2 },
-    { label: 'БТЭ 1 + БТЭ 2', value: 'Common' },
+    { label: __('first'), value: 1 },
+    { label: __('second'), value: 2 },
+    { label: __('first + second'), value: 'Common' },
   ];
 
   const xOptions = [
-    { name: 'time', label: 'Время', value: 0, symbol: 't, c' },
-    { name: 'current', label: 'Ток', value: 1, symbol: 'I, A' },
-    { name: 'consumption', label: 'Расход', value: 2, symbol: 'Q, мл/мин' },
+    { name: 'time', label: __('time'), value: 0, symbol: `t, ${__('s')}` },
+    { name: 'current', label: __('current'), value: 1, symbol: `I, ${__('A')}` },
+    { name: 'consumption', label: __('consumption'), value: 2, symbol: `Q, ${__('ml/min')}` },
   ];
 
   const yOptions = [
-    { name: 'voltage', label: 'Напряжение', value: 0, symbol: 'U, B' },
-    { name: 'current', label: 'Ток', value: 1, symbol: 'I, A' },
-    { name: 'power', label: 'Мощность', value: 2, symbol: 'P, Вт' },
+    { name: 'voltage', label: __('voltage'), value: 0, symbol: `U, ${__('V')}` },
+    { name: 'current', label: __('current'), value: 1, symbol: `I, ${__('A')}` },
+    { name: 'power', label: __('power'), value: 2, symbol: `P, ${__('W')}` },
   ];
 
   let selectedX = xOptions[0],
@@ -127,14 +127,14 @@
 
   function saveFile() {
     ipcRenderer.send('writeExcel', {
-      name: `УМВЭ_${selectedX.label}-${selectedY.label}`,
-      worksheets: ['БТЭ1', 'БТЭ2', 'БТЭ1 + БТЭ2'],
+      name: `${__('HE')}_${selectedX.label}-${selectedY.label}`,
+      worksheets: [__('first'), __('second'), __('first + second')],
       headers: Array(3).fill([
-        'Вермя, с',
-        'Ток, А',
-        'Напряжение, В',
-        'Мощность, Вт',
-        'Расход, мл/мин',
+        `${__('time')}, ${__('s')}`,
+        `${__('voltage')}, ${__('V')}`,
+        `${__('current')}, ${__('A')}`,
+        `${__('power')}, ${__('W')}`,
+        `${__('consumption')}, ${__('ml/min')}`,
       ]),
       rows: pStorage.rows.map(row => [
         row.slice(0, 5),
@@ -146,10 +146,10 @@
     ipcRenderer.once('fileSaved', (e, err) => {
       fileSaving = false;
       if (err) {
-        saveMessage = 'Не удалось сохранить файл';
+        saveMessage = __('save error');
         console.error(err);
       }
-      else saveMessage = 'Файл успешно сохранен';
+      else saveMessage = __('save success');
     });
   }
 
@@ -167,17 +167,17 @@
 </script>
 
 <div class="layout">
-  <header>Построение графиков</header>
+  <header>{__('charts')}</header>
   <main>
     <div class="selects">
-      <div class="label">Тип соединения</div>
+      <div class="label">{__('connection type')}</div>
       <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
       <div class="select-field">
-        <span class="select-label">Объект исследования</span>
+        <span class="select-label">{__('research subject')}</span>
         <Select order={1} onChange={selectSubject} options={subjectOptions} />
       </div>
       <div class="select-field">
-        <span class="select-label">Ось X</span>
+        <span class="select-label">{__('x axis')}</span>
         <Select
           order={2}
           onChange={selectX}
@@ -185,7 +185,7 @@
           defaultValue={selectedX.value} />
       </div>
       <div class="select-field">
-        <span class="select-label">Ось Y</span>
+        <span class="select-label">{__('y axis')}</span>
         <Select
           order={3}
           onChange={selectY}
@@ -194,7 +194,7 @@
       </div>
 
       <Button on:click={toggleDrawing} disabled={startDisabled}>
-        {isDrawing ? 'Стоп' : 'Старт'}
+        {isDrawing ? __('stop') : __('start')}
       </Button>
     </div>
     <div class="chart">
@@ -203,21 +203,21 @@
   </main>
   <footer>
     <div class="back">
-      <Button on:click={onPrev}>Назад</Button>
+      <Button on:click={onPrev}>{__('back')}</Button>
     </div>
     <div class="save">
       <Button on:click={saveFile} disabled={!usbAttached || noData}>
         {#if fileSaving}
           <img src="../static/icons/spinner.svg" alt="spinner" class="spin" />
         {/if}
-        Сохранить данные на USB-устройство
+        {__('save usb')}
       </Button>
     </div>
     {#if saveMessage}
       <div class="popup" transition:fly={{ y: -100 }}>
         <button class="popup-close" on:click={closePopup}>&#x2573;</button>
         <p>{saveMessage}</p>
-        <Button size="sm" on:click={ejectUsb}>Извлечь usb-устройство</Button>
+        <Button size="sm" on:click={ejectUsb}>{__('eject')}</Button>
       </div>
     {/if}
   </footer>

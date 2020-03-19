@@ -3,6 +3,7 @@
   import { LOW_PRESSURE } from '../constants';
   import { slide } from 'svelte/transition';
   import { onMount, onDestroy } from 'svelte';
+  import { __ } from '../constants';
 
   onMount(() => document.addEventListener('click', onClickOutsideTooltip));
   onMount(() => document.removeEventListener('click', onClickOutsideTooltip));
@@ -14,7 +15,8 @@
   $: isLowPressure = $data.pressure.value < LOW_PRESSURE;
   $: visible = isLowPressure || $isCriticalConcentration;
 
-  let tooltipVisible = false, tooltip;
+  let tooltipVisible = false,
+    tooltip;
 
   function toggleTooltip() {
     tooltipVisible = !tooltipVisible;
@@ -38,7 +40,7 @@
       </svg>
       {#if tooltipVisible}
         <div class="tooltip" transition:slide bind:this={tooltip}>
-          Критически высокая концентрация водорода!
+          {__('critical hydrogen concentration')}
         </div>
       {/if}
     {/if}
@@ -48,7 +50,7 @@
           d="M11,13.28l-1.5,19L8,13.28a1.5,1.5,0,0,1,3-.23A.89.89,0,0,1,11,13.28ZM11.5,38a2,2,0,1,0-2,2A2,2,0,0,0,11.5,38Zm-2,0ZM19,45V4a1,1,0,0,0-1-1H13V1a1,1,0,0,0-1-1H7A1,1,0,0,0,6,1V3H1A1,1,0,0,0,0,4V45a1,1,0,0,0,1,1H18A1,1,0,0,0,19,45ZM2,5H7A1,1,0,0,0,8,4V2h3V4a1,1,0,0,0,1,1h5V44H2Z"
           fill="var(--danger-color)" />
       </svg>
-      <div class="message">Замените картридж H2!</div>
+      <div class="message">{@html __('replace cartridge')}</div>
     {/if}
   </div>
 {/if}

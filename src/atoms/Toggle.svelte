@@ -1,4 +1,5 @@
 <script>
+  import { __ } from '../constants';
   export let checked;
   export let value;
   export let name;
@@ -8,7 +9,7 @@
 <label>
   <slot />
   <input type="checkbox" {value} {name} on:change bind:checked {disabled} />
-  <span class:disabled class:checked>{checked ? 'вкл' : 'выкл'}</span>
+  <span class:disabled class:checked>{checked ? __('вкл') : __('выкл')}</span>
 </label>
 
 <style>

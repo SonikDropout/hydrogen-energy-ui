@@ -2,7 +2,7 @@
   import { data, getValue } from '../stores';
   import RangeInput from '../molecules/RangeInput';
   import Button from '../atoms/Button';
-  import { CONSTRAINTS, COMMANDS } from '../constants';
+  import { CONSTRAINTS, COMMANDS, __ } from '../constants';
   import { ipcRenderer } from 'electron';
   export let onNext;
 
@@ -24,21 +24,21 @@
 </script>
 
 <div class="layout">
-  <header>Задание параметров работы батарей топливных элементов</header>
+  <header>{__('set params')}</header>
   <main>
     {#each columns as { pos }}
       <div class="col">
-        <h2>БТЭ {pos}</h2>
+        <h2>{__('fuel cell')} {pos}</h2>
         <img
           src="../static/icons/fuelCell.svg"
           alt="fuelCell"
           class="fc-icon" />
         <figure>
           <img src="../static/icons/fan.svg" alt="fan" />
-          <figcaption>Вентилятор</figcaption>
+          <figcaption>{__('fan')}</figcaption>
         </figure>
         <div class="input-field">
-          <div class="label">Мощность вентилятора, % от макс</div>
+          <div class="label">{__('fan power')}, {__('percent')}</div>
           <RangeInput
             name="{pos}"
             onChange={setFanPower}
@@ -47,16 +47,16 @@
         </div>
         <figure>
           <img src="../static/icons/valve.svg" alt="valve" />
-          <figcaption>Продувочный клапан</figcaption>
+          <figcaption>{__('blow valve')}</figcaption>
         </figure>
         <div class="input-field">
-          <div class="label">Периодичность продувки, с</div>
+          <div class="label">{__('blow period')}, {__('s')}</div>
           <RangeInput
             name={pos}
             onChange={setBlowPeriod}
             range={CONSTRAINTS.blowPeriod}
             defaultValue={initialData['blowPeriod' + pos].value} />
-          <div class="label">Длительность продувки, мс</div>
+          <div class="label">{__('blow duration')}, {__('ms')}</div>
           <RangeInput
             name={pos}
             onChange={setBlowDuration}
@@ -67,7 +67,7 @@
     {/each}
   </main>
   <footer>
-    <Button on:click={onNext}>Перейти к исследованиям</Button>
+    <Button on:click={onNext}>{__('go to research')}</Button>
   </footer>
 </div>
 

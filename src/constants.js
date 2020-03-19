@@ -1,5 +1,10 @@
 const { mergeRename } = require('./utils/others');
+const i18n = require('./utils/i18n');
 const path = require('path');
+
+i18n.loadJSON(path.join(__dirname, '..', 'locale', 'de.json'), 'de');
+i18n.loadJSON(path.join(__dirname, '..', 'locale', 'ru.json'), 'ru');
+i18n.setLocale('ru');
 
 const IS_RPI = process.platform === 'linux' && process.arch == 'arm';
 const PORT = {
@@ -21,12 +26,12 @@ const LOW_PRESSURE = 0.2;
 const SINGLE_DATA = {
   voltage: {
     symbol: 'U',
-    units: 'В',
+    units: i18n.__('V'),
     divider: 1000,
   },
   current: {
     symbol: 'I',
-    units: 'А',
+    units: i18n.__('A'),
     divider: 1000,
   },
   temp1: {
@@ -40,16 +45,16 @@ const SINGLE_DATA = {
     divider: 10,
   },
   blowDuration: {
-    label: 'Длительность продувки',
-    units: 'мс',
+    label: i18n.__('blow duration'),
+    units: i18n.__('ms'),
   },
   blowPeriod: {
-    label: 'Задержка продувки',
-    units: 'с',
+    label: i18n.__('blod period'),
+    units: i18n.__('s'),
   },
   fanPower: {
-    label: 'Moщность вентилятора',
-    units: '% от макс',
+    label: i18n.__('fan power'),
+    units: i18n.__('percent'),
   },
 };
 
@@ -60,13 +65,13 @@ const COMMON_DATA = {
     divider: 10,
   },
   currentExternal: {
-    symbol: 'I<sub>внеш нагр</sub>',
-    units: 'А',
+    symbol: `I<sub>${i18n.__('external load')}</sub>`,
+    units: i18n.__('A'),
     divider: 1000,
   },
   currentInternal: {
-    symbol: 'I<sub>внутр нагр</sub>',
-    units: 'А',
+    symbol: `I<sub>${i18n.__('internal load')}</sub>`,
+    units: i18n.__('A'),
     divider: 1000,
   },
   loadValue: {
@@ -74,15 +79,15 @@ const COMMON_DATA = {
   },
   consumption1: {
     symbol: 'Q',
-    units: 'мл/мин',
+    units: i18n.__('ml/min'),
   },
   consumption2: {
     symbol: 'Q',
-    units: 'мл/мин',
+    units: i18n.__('ml/min'),
   },
   pressure: {
     symbol: 'p',
-    units: 'атм',
+    units: i18n.__('bar'),
     divider: 1000,
   },
 };
@@ -145,11 +150,11 @@ const CONSTRAINTS = {
 };
 
 const CONNECTION_TYPES = [
-  'Последовательное',
-  'Параллельное',
-  'только БТЭ 1',
-  'только БТЭ 2',
-  'не выбран',
+  i18n.__('series'),
+  i18n.__('parallel'),
+  i18n.__('only first'),
+  i18n.__('only second'),
+  i18n.__('not selected'),
 ];
 
 const SETTINGS_PATH = IS_RPI
@@ -169,4 +174,5 @@ module.exports = {
   COMMANDS,
   CONNECTION_TYPES,
   SETTINGS_PATH,
+  __: i18n.__.bind(i18n),
 };

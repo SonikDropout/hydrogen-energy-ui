@@ -1,13 +1,13 @@
 <script>
   import { ipcRenderer } from 'electron';
+  import {__} from '../constants';
   let highLevel;
   ipcRenderer.on('calibrationFinish', (e, v) => (highLevel = v));
 </script>
 
 <div class="modal">
   <div class="modal-body">
-    <h3>Калибровка датчика водорода...</h3>
-    <p>Если вы начали калибровку случайно, перезагрузите стенд</p>
+    <h3>{__('sensor calibration')}</h3>
     {#if highLevel !== void 0}
       <strong>{highLevel}</strong>
     {/if}
@@ -37,7 +37,7 @@
     align-items: center;
     text-align: center;
   }
-  h3,p {
+  h3 {
     max-width: 80%;
   }
 </style>
