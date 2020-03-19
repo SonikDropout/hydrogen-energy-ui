@@ -3,7 +3,9 @@
   export let onChange;
   export let options;
   export let disabled;
-  export let defaultValue;
+  export let selected = {
+    label: '-- nicht ausgewählt --',
+  };
   export let order = 0;
 
   onMount(() => document.addEventListener('click', handleClickOutside));
@@ -12,10 +14,6 @@
   function handleClickOutside(e) {
     if (optionsVisible && !select.contains(e.target)) optionsVisible = false;
   }
-
-  let selected = options.find(o => o.value === defaultValue) || {
-    label: '-- не выбрано --',
-  };
 
   let optionsVisible = false,
     select;
@@ -38,7 +36,6 @@
   function selectOption(e) {
     optionsVisible = false;
     const v = e.target.dataset.value;
-    selected = options.find(o => o.value == v);
     onChange(v);
   }
 </script>
@@ -51,11 +48,14 @@
     class:disabled
     class:active
     class:expand={optionsVisible}>
-    <div class="selected" on:click={toggleOptions}><span class="label" title={selected.label}>{selected.label}</span><span class="arrow"></span></div>
+    <div class="selected" on:click={toggleOptions}>
+      <span class="label" title={selected.label}>{selected.label}</span>
+      <span class="arrow" />
+    </div>
     {#if optionsVisible}
       <ul transition:drop>
         {#each options as { icon, label, value }}
-          <li data-value={value} on:click={selectOption}>
+          <li data-value={value} on:click={selectOption} title={label}>
             {#if icon}
               <i class="icon icon-{icon}" />
             {/if}
@@ -125,6 +125,9 @@
     padding: 0 1rem;
     line-height: 3.2rem;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   ul {
