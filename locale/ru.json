@@ -58,5 +58,8 @@
   "constant voltage": "Постоянное напряжение",
   "constant current": "Постоянный ток",
   "constant power": "Постоянная мощность",
-  "set": "Установка"
+  "set": "Установка",
+  "set voltage": "Уставка U, В",
+  "set current": "Уставка I, А",
+  "set power": "Установка P, Вт"
 }

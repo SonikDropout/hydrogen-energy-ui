@@ -4,7 +4,7 @@ const path = require('path');
 
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'de.json'), 'de');
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'ru.json'), 'ru');
-i18n.setLocale('ru');
+i18n.setLocale('de');
 
 const IS_RPI = process.platform === 'linux' && process.arch == 'arm';
 const PORT = {
