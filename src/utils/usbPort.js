@@ -39,7 +39,7 @@ function handleDrives(drives) {
 }
 
 function mountDevice(device) {
-  exec(`sudo mount ${device + 1} /media/usb1 -o uid=$UID`, (error, stdout, stderr) => {
+  exec(`sudo mount ${device + 1} /media/usb1 -o uid=1000`, (error, stdout, stderr) => {
     if (error) {
       console.error(error.message);
       return;
