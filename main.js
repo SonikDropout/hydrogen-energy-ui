@@ -88,12 +88,13 @@ function launch() {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
+      preload: path.join(__dirname, 'src', 'preload.js')
     },
   });
 
   win.loadURL(
     url.format({
-      pathname: path.join(__dirname, './static/index.html'),
+      pathname: path.join(__dirname, 'static', 'index.html'),
       protocol: 'file:',
       slashes: true,
     })
