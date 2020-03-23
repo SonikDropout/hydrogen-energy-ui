@@ -1,7 +1,6 @@
 <script>
   import Button from '../atoms/Button';
   import Select from '../molecules/Select';
-  import ControledSelect from '../molecules/ControlledSelect';
   import Toggle from '../atoms/Toggle';
   import RangeInput from '../molecules/RangeInput';
   import { data } from '../stores';
@@ -59,13 +58,23 @@
       value: 1,
       symbol: `U, ${__('V')}`,
     },
-    { label:  __('constant current'), name: 'current', value: 2, symbol: 'I, A' },
-    { label:  __('constant power'), name: 'power', value: 3, symbol: `P, ${__('W')}` },
+    {
+      label: __('constant current'),
+      name: 'current',
+      value: 2,
+      symbol: 'I, A',
+    },
+    {
+      label: __('constant power'),
+      name: 'power',
+      value: 3,
+      symbol: `P, ${__('W')}`,
+    },
   ];
 
   let selectedLoadMode = loadModeOptions[$data.loadMode],
     loadValue = $data.loadValue.value,
-    selectedConnectionType = connectionTypeOptions[0];
+    selectedConnectionType = connectionTypeOptions[$data.connectionType];
 
   function setConnectionType(t) {
     selectedConnectionType = connectionTypeOptions[t];
@@ -77,7 +86,7 @@
   function setLoadMode(m) {
     selectedLoadMode = loadModeOptions[m];
     ipcRenderer.send('serialCommand', COMMANDS.switchLoadMode(+m));
-    setTimeout(() => (loadValue = $data.loadValue.value), 1500);
+    resetLoadValue();
   }
   function setLoadValue(v) {
     ipcRenderer.send('serialCommand', COMMANDS.setValue(+v));
@@ -90,12 +99,20 @@
       COMMANDS[(checked ? 'open' : 'close') + 'Valve' + name]
     );
   }
-
   function toggleAll() {
     isActive = !isActive;
     valves[0] = false;
     valves[1] = false;
     ipcRenderer.send('serialCommand', COMMANDS[isActive ? 'start' : 'stop']);
+  }
+  function resetLoadValue() {
+    if (selectedLoadMode.value === 1) {
+      loadValue = CONSTRAINTS['voltage' + selectedConnectionType.name][1];
+    } else {
+      loadValue =
+        CONSTRAINTS[selectedLoadMode.name + selectedConnectionType.name][0];
+    }
+    ipcRenderer.send('serialCommand', COMMANDS.switchLoadMode(loadValue));
   }
 </script>
 
@@ -108,18 +125,18 @@
         <Select
           onChange={setConnectionType}
           options={connectionTypeOptions}
-          defaultValue={$data.connectionType} />
+          selected={selectedConnectionType} />
       </div>
       <div class="select-field col">
         <div class="label">{__('load mode')}</div>
-        <ControledSelect
+        <Select
           onChange={setLoadMode}
           options={loadModeOptions}
           selected={selectedLoadMode} />
       </div>
       <div class="load-mode col">
         {#if selectedLoadMode.value}
-          <span class="label">{__('set')} {selectedLoadMode.symbol}</span>
+          <span class="label">{__('set ' + selectedLoadMode.name)}</span>
           <RangeInput
             step={0.1}
             onChange={setLoadValue}

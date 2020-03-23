@@ -41,13 +41,33 @@
 
   const xOptions = [
     { name: 'time', label: __('time'), value: 0, symbol: `t, ${__('s')}` },
-    { name: 'current', label: __('current'), value: 1, symbol: `I, ${__('A')}` },
-    { name: 'consumption', label: __('consumption'), value: 2, symbol: `Q, ${__('ml/min')}` },
+    {
+      name: 'current',
+      label: __('current'),
+      value: 1,
+      symbol: `I, ${__('A')}`,
+    },
+    {
+      name: 'consumption',
+      label: __('consumption'),
+      value: 2,
+      symbol: `Q, ${__('ml/min')}`,
+    },
   ];
 
   const yOptions = [
-    { name: 'voltage', label: __('voltage'), value: 0, symbol: `U, ${__('V')}` },
-    { name: 'current', label: __('current'), value: 1, symbol: `I, ${__('A')}` },
+    {
+      name: 'voltage',
+      label: __('voltage'),
+      value: 0,
+      symbol: `U, ${__('V')}`,
+    },
+    {
+      name: 'current',
+      label: __('current'),
+      value: 1,
+      symbol: `I, ${__('A')}`,
+    },
     { name: 'power', label: __('power'), value: 2, symbol: `P, ${__('W')}` },
   ];
 
@@ -56,7 +76,7 @@
     pStorage = new PointsStorage(),
     usbAttached = false,
     noData = true,
-    selectedSubject,
+    selectedSubject = subjectOptions[0],
     isDrawing,
     unsubscribeData,
     saveMessage,
@@ -148,8 +168,7 @@
       if (err) {
         saveMessage = __('save error');
         console.error(err);
-      }
-      else saveMessage = __('save success');
+      } else saveMessage = __('save success');
     });
   }
 
@@ -172,9 +191,13 @@
     <div class="selects">
       <div class="label">{__('connection type')}</div>
       <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
-      <div class="select-field">
-        <span class="select-label">{__('research subject')}</span>
-        <Select order={1} onChange={selectSubject} options={subjectOptions} />
+      <div class="select-block">
+        <div class="label">{__('research subject')}</div>
+        <Select
+          order={1}
+          onChange={selectSubject}
+          options={subjectOptions}
+          selected={selectedSubject} />
       </div>
       <div class="select-field">
         <span class="select-label">{__('x axis')}</span>
@@ -182,7 +205,7 @@
           order={2}
           onChange={selectX}
           options={xOptions}
-          defaultValue={selectedX.value} />
+          selected={selectedX} />
       </div>
       <div class="select-field">
         <span class="select-label">{__('y axis')}</span>
@@ -190,7 +213,7 @@
           order={3}
           onChange={selectY}
           options={yOptions}
-          defaultValue={selectedY.value} />
+          selected={selectedY} />
       </div>
 
       <Button on:click={toggleDrawing} disabled={startDisabled}>
@@ -251,6 +274,9 @@
     text-transform: uppercase;
     font-weight: 500;
     margin-bottom: auto;
+  }
+  .select-block {
+    margin-bottom: 0.8rem;
   }
   .select-field {
     margin: 1rem 0;
