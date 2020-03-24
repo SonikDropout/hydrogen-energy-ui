@@ -78,6 +78,7 @@
   }
   .col {
     max-width: 40rem;
+    flex: 1 1;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
   }
