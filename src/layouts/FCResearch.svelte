@@ -80,7 +80,7 @@
     selectedConnectionType = connectionTypeOptions[t];
     if (t == 2) valves[1] = 0;
     if (t == 3) valves[0] = 0;
-    selectedLoadMode = loadModeOptions[0];
+    resetLoadMode();
     ipcRenderer.send('serialCommand', COMMANDS.switchConnectionType(+t));
   }
   function setLoadMode(m) {
@@ -105,6 +105,10 @@
     valves[1] = false;
     ipcRenderer.send('serialCommand', COMMANDS[isActive ? 'start' : 'stop']);
   }
+  function resetLoadMode() {
+    selectedLoadMode = loadModeOptions[0];
+    ipcRenderer.send('serialCommand', COMMANDS.switchLoadMode(0));
+  }
   function resetLoadValue() {
     if (selectedLoadMode.value === 1) {
       loadValue = CONSTRAINTS['voltage' + selectedConnectionType.name][1];
@@ -112,7 +116,7 @@
       loadValue =
         CONSTRAINTS[selectedLoadMode.name + selectedConnectionType.name][0];
     }
-    ipcRenderer.send('serialCommand', COMMANDS.switchLoadMode(loadValue));
+    ipcRenderer.send('serialCommand', COMMANDS.setValue(loadValue));
   }
 </script>
 

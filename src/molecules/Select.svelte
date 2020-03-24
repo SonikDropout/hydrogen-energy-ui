@@ -34,7 +34,8 @@
 
   function selectOption(e) {
     optionsVisible = false;
-    const v = e.target.dataset.value;
+    const v = e.currentTarget.dataset.value;
+    console.log(v);
     onChange(v);
   }
 </script>
