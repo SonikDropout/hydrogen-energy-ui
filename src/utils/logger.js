@@ -50,7 +50,9 @@ function writeRows(entries) {
 }
 
 function saveFile(dir, cb) {
-  wb.write(path.join(dir, fileName + '.xlsx'), cb);
+  const logPath = path.join(dir, fileName + '.xlsx');
+  console.log('writing log to:', logPath);
+  wb.write(logPath, cb);
   wb = fileName = void 0;
   ws = [];
   row = 1;
