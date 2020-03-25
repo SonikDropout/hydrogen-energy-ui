@@ -1,4 +1,4 @@
-const clone = (obj) => JSON.parse(JSON.stringify(obj));
+const clone = obj => JSON.parse(JSON.stringify(obj));
 
 const mergeRename = (objects, names) => {
   const result = {};
@@ -10,7 +10,7 @@ const mergeRename = (objects, names) => {
   return result;
 };
 
-const capitalize = (s) => s[0].toUpperCase() + s.slice(1);
+const capitalize = s => s[0].toUpperCase() + s.slice(1);
 
 const getFileDate = () => {
   const date = new Date();
@@ -18,10 +18,24 @@ const getFileDate = () => {
     1}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}`;
 };
 
-const countKeys = (obj) => {
+const countKeys = obj => {
   let n = 0;
   for (let key in obj) n++;
   return n;
 };
 
-module.exports = { clone, mergeRename, capitalize, getFileDate, countKeys };
+function delay(fn, ms) {
+  return (...args) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(fn, ms, ...args);
+  };
+}
+
+module.exports = {
+  clone,
+  mergeRename,
+  capitalize,
+  getFileDate,
+  countKeys,
+  delay,
+};

@@ -1,17 +1,16 @@
 const usbDetect = require('usb-detection');
-const driveList = require('drivelist');
 const EventEmitter = require('events');
 const { exec } = require('child_process');
 
 const usbPort = new EventEmitter();
 let connectedDevice, timeout;
 
-function delay(fn, ms) {
-  return (...args) => {
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(fn, ms, ...args);
-  };
-}
+const getDriveList = new Promise((resolve, reject) => {
+  exec('lsblk -o +path --json', (err, output) => {
+    if (err) reject(err);
+    else resolve(JSON.parse(output));
+  });
+});
 
 Object.defineProperty(usbPort, 'isDeviceConnected', {
   get: function() {
@@ -20,49 +19,63 @@ Object.defineProperty(usbPort, 'isDeviceConnected', {
 });
 
 usbDetect.startMonitoring();
-usbDetect.on('add', delay(findDrive, 1500));
+usbDetect.on('add', findDrive);
 usbDetect.on('remove', handleRemove);
 
 function findDrive() {
-  driveList
-    .list()
-    .then(handleDrives)
-    .catch(console.error);
-}
-
-function handleDrives(drives) {
-  console.log(drives.map(drive => drive.raw));
-  const drive = drives.find(isSuitableDrive);
-  if (!drive) return;
-  connectedDevice = drive.device;
-  if (!drive.mountpoints[0]) mountDevice(drive.device);
-  else usbPort.emit('add', drive.mountpoints[0].path);
+  getDriveList()
+    .then(drives => {
+      const device = drives.find(dev => dev.rm);
+      if (!device) return;
+      if (device.children) {
+        connectedDevice = device.children[0].path;
+        mountDevice(connectedDevice);
+      } else {
+        connectedDevice = device.path;
+        mountDevice(connectedDevice);
+      }
+    })
+    .catch(err => console.error(err.message));
 }
 
 function mountDevice(device) {
-  exec(`sudo mount ${device} /media/usb1 -o uid=1000`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(error.message);
-      return;
+  exec(
+    `sudo mount ${device} /media/usb1 -o uid=1000`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(error.message);
+        return;
+      }
+      if (stderr) {
+        console.error(stderr);
+        return;
+      }
+      usbPort.emit('add', '/media/usb1');
     }
-    if (stderr) {
-      console.error(stderr);
-      return;
-    }
-    usbPort.emit('add', '/media/usb1');
-  });
-}
-
-function isSuitableDrive(drive) {
-  return !drive.isSystem && drive.isUSB;
+  );
 }
 
 function handleRemove() {
-  driveList.list().then(drives => {
-    if (!drives.find(drive => drive.device === connectedDevice)) {
-      usbPort.emit('remove');
-    }
-  });
+  getDriveList()
+    .then(devices => {
+      const device = devices.find(dev => dev.rm);
+      if (!device) {
+        emitRemove();
+        return;
+      }
+      if (device.children && device.children[0].path !== connectedDevice)
+        emitRemove();
+      else if (device.path !== connectedDevice) emitRemove();
+    })
+    .catch(err => {
+      console.error(err.message);
+      emitRemove();
+    });
+}
+
+function emitRemove() {
+  usbPort.emit('remove');
+  connectedDevice = void 0;
 }
 
 usbPort.eject = cb => {
