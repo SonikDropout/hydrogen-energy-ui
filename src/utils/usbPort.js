@@ -1,14 +1,15 @@
 const usbDetect = require('usb-detection');
 const EventEmitter = require('events');
 const { exec } = require('child_process');
+const { debounce } = require('./others');
 
 const usbPort = new EventEmitter();
-let connectedDevice, timeout;
+let connectedDevice;
 
-const getDriveList = new Promise((resolve, reject) => {
+const getDriveList = () => new Promise((resolve, reject) => {
   exec('lsblk -o +path --json', (err, output) => {
     if (err) reject(err);
-    else resolve(JSON.parse(output));
+    else resolve(JSON.parse(output).blockdevices);
   });
 });
 
@@ -18,8 +19,10 @@ Object.defineProperty(usbPort, 'isDeviceConnected', {
   },
 });
 
+const debouncedFind = debounce(findDrive, 1500);
+
 usbDetect.startMonitoring();
-usbDetect.on('add', findDrive);
+usbDetect.on('add', debouncedFind);
 usbDetect.on('remove', handleRemove);
 
 function findDrive() {

@@ -24,9 +24,10 @@ const countKeys = obj => {
   return n;
 };
 
-function delay(fn, ms) {
+function debounce(fn, ms) {
+  let timeout;
   return (...args) => {
-    if (timeout) clearTimeout(timeout);
+    clearTimeout(timeout);
     timeout = setTimeout(fn, ms, ...args);
   };
 }
@@ -37,5 +38,5 @@ module.exports = {
   capitalize,
   getFileDate,
   countKeys,
-  delay,
+  debounce,
 };
