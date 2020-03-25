@@ -13,7 +13,7 @@ function writeLog({ name, dir, rows, worksheets, headers, cb }) {
   createFile(name);
   addWorksheets(worksheets, headers);
   writeRows(rows);
-  saveFile(dir, cb);
+  saveFile(dir, cb, rows.length);
 }
 
 function createFile(fn) {
@@ -49,10 +49,11 @@ function writeRows(entries) {
   }
 }
 
-function saveFile(dir, cb) {
+function saveFile(dir, cb, rn) {
   const logPath = path.join(dir, fileName + '.xlsx');
   console.log('writing log to:', logPath);
-  wb.write(logPath, cb);
+  delayedCb = (...args) => setTimeout(cb, rn * 100, ...args)
+  wb.write(logPath, delayedCb);
   wb = fileName = void 0;
   ws = [];
   row = 1;
