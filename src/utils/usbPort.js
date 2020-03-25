@@ -31,6 +31,7 @@ function findDrive() {
 }
 
 function handleDrives(drives) {
+  console.log(drives.map(drive => drive.raw));
   const drive = drives.find(isSuitableDrive);
   if (!drive) return;
   connectedDevice = drive.device;
@@ -39,7 +40,7 @@ function handleDrives(drives) {
 }
 
 function mountDevice(device) {
-  exec(`sudo mount ${device + 1} /media/usb1 -o uid=1000`, (error, stdout, stderr) => {
+  exec(`sudo mount ${device} /media/usb1 -o uid=1000`, (error, stdout, stderr) => {
     if (error) {
       console.error(error.message);
       return;
