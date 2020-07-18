@@ -5,6 +5,6 @@ keyboard-setup.service
 triggerhappy.service
 avahi-daemon.service
 systemd-timesyncd.service
-wpa-supplicant.service
+wpa_supplicant.service
 bluetooth.service
 hciuart.service
