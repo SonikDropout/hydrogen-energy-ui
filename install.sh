@@ -12,3 +12,5 @@ echo '/opt/hydrogen-energy/HydrogenEnergy' > ~/.xinitrc
 chmod +x ~/.xinitrc
 
 while read p; do sudo systemctl disable "$p"; done < unused-packages.list
+
+reboot
