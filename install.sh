@@ -4,8 +4,8 @@ sudo apt-get install -y libudev-dev &&
 # MAIN APP INSTALLATION
 npm i &&
 npm run build &&
-mkdir /opt/hydrogen-energy
-cp -rf dist/linux-armv7l-unpacked/** /opt/hydrogen-energy/
+sudo mkdir /opt/hydrogen-energy
+sudo cp -rf dist/linux-armv7l-unpacked/** /opt/hydrogen-energy/
 
 # MAIN APP AUTOSTART
 echo '/opt/hydrogen-energy/HydrogenEnergy' > ~/.xinitrc
