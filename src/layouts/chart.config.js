@@ -5,8 +5,8 @@ module.exports = function config(points, axesLabels) {
       datasets: [
         {
           data: points,
-          backgroundColor: "rgba(26,162,221, .1)",
-          borderColor: "#1aa2dd"
+          borderColor: "#1aa2dd",
+          backgroundColor: "transparent"
         }
       ]
     },
