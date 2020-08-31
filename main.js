@@ -54,7 +54,7 @@ function initPeripherals(win) {
   ipcMain.on('calibrationStart', e =>
     serial.startCalibration(onCalibrationFinish(e.reply))
   );
-  ipcMain.on('writeExcel', (_, options) => {
+  ipcMain.on('saveFile', (_, options) => {
     try {
       logger.writeLog({
         dir: usbPath,

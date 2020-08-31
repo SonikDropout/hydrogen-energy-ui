@@ -9,6 +9,7 @@
   import configureChart from './chart.config';
   import { onMount } from 'svelte';
   import PointsStorage from '../utils/PointsStorage';
+  import SaveButton from '../organisms/SaveButton';
   import { fly } from 'svelte/transition';
   export let onPrev;
 
@@ -92,13 +93,10 @@
   }
 
   function resetCols(x, y) {
-    if (y)
-      pStorage.setYCol(
-        pointEntries.indexOf(selectedY.name + selectedSubject.value) + 1 // index 0 is time
-      );
+    if (y) pStorage.setYCol(selectedY.name + selectedSubject.value);
     if (x)
       pStorage.setXCol(
-        pointEntries.indexOf(selectedX.name + selectedSubject.value) + 1 // index 0 is time
+        selectedX.name + selectedX.name !== 'time' ? selectedSubject.value : '' // time same for all
       );
   }
 
@@ -136,8 +134,11 @@
   }
 
   function getEntries(data) {
-    const row = [Math.floor((Date.now() - timeStart) / 1000)];
-    return row.concat(pointEntries.map(key => data[key].value));
+    const row = { time: Math.round((Date.now() - timeStart) / 1000) };
+    for (let key of pointEntries) {
+      row[key] = data[key].value;
+    }
+    return row;
   }
 
   function updateChart() {
@@ -229,20 +230,8 @@
       <Button on:click={onPrev}>{__('back')}</Button>
     </div>
     <div class="save">
-      <Button on:click={saveFile} disabled={!usbAttached || noData}>
-        {#if fileSaving}
-          <img src="../static/icons/spinner.svg" alt="spinner" class="spin" />
-        {/if}
-        {__('save usb')}
-      </Button>
+      <SaveButton />
     </div>
-    {#if saveMessage}
-      <div class="popup" transition:fly={{ y: -100 }}>
-        <button class="popup-close" on:click={closePopup}>&#x2573;</button>
-        <p>{saveMessage}</p>
-        <Button size="sm" on:click={ejectUsb}>{__('eject')}</Button>
-      </div>
-    {/if}
   </footer>
 </div>
 
@@ -268,7 +257,7 @@
     flex: 1 1 52rem;
   }
   .save {
-    text-align: center;
+    text-align: right;
   }
   .ct {
     text-transform: uppercase;
@@ -291,28 +280,5 @@
   main :global(button) {
     margin-top: auto;
     align-self: flex-start;
-  }
-  .spin {
-    height: 1.6rem;
-    animation: spin 1s linear infinite;
-  }
-  .popup {
-    position: absolute;
-    background-color: var(--bg-color);
-    top: 3px;
-    left: calc(50% - 15rem);
-    width: 30rem;
-    padding: 0 2rem 1rem;
-    border-radius: 4px;
-    box-shadow: 0 0 6px -1px var(--text-color);
-  }
-  .popup-close {
-    background-color: transparent;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    border: none;
-    outline: none;
-    font-size: 1rem;
   }
 </style>
