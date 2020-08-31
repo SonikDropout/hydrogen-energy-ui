@@ -3,6 +3,7 @@
   import { CONNECTION_TYPES, __ } from '../constants';
   import Select from '../molecules/Select';
   import Button from '../atoms/Button';
+  import Toggle from '../atoms/Toggle';
   import { ipcRenderer } from 'electron';
   import Chart from 'chart.js';
   import zoom from 'chartjs-plugin-zoom';
@@ -16,7 +17,7 @@
   onMount(() => {
     chart = new Chart(
       document.getElementById('chart').getContext('2d'),
-      configureChart(pStorage.points, {
+      configureChart({
         x: selectedX.symbol,
         y: selectedY.symbol,
       })
@@ -28,15 +29,17 @@
   ipcRenderer.on('usbConnected', () => (usbAttached = true));
   ipcRenderer.on('usbDisconnected', () => (usbAttached = false));
 
-  const pointEntries = [1, 2, 'Common']
+  const subjects = ['1', '2', 'Common'];
+
+  const pointEntries = subjects
     .map(name =>
       ['current', 'voltage', 'power', 'consumption'].map(id => id + name)
     )
     .flat();
 
   const subjectOptions = [
-    { label: __('first'), value: 1 },
-    { label: __('second'), value: 2 },
+    { label: __('first'), value: '1' },
+    { label: __('second'), value: '2' },
     { label: __('first + second'), value: 'Common' },
   ];
 
@@ -134,7 +137,10 @@
   }
 
   function getEntries(data) {
-    const row = { time: Math.round((Date.now() - timeStart) / 1000) };
+    const row = {};
+    for (let key of subjects) {
+      row['time' + key] = Math.round((Date.now() - timeStart) / 1000);
+    }
     for (let key of pointEntries) {
       row[key] = data[key].value;
     }
@@ -142,7 +148,13 @@
   }
 
   function updateChart() {
-    chart.data.datasets[0].data = pStorage.points;
+    for (let i = 0; i < 3; ++i) {
+      chart.data.datasets[i].data = [];
+    }
+    for (let lineId in pStorage.lines) {
+      chart.data.datasets[subjects.indexOf(lineId)].data =
+        pStorage.lines[lineId];
+    }
     chart.update();
   }
 
@@ -173,16 +185,13 @@
     });
   }
 
-  function ejectUsb() {
-    ipcRenderer.send('ejectUSB');
-    ipcRenderer.once('usbEjected', () => {
-      saveMessage = '';
-      usbAttached = false;
-    });
-  }
-
-  function closePopup() {
-    saveMessage = '';
+  function toggleLine(e) {
+    if (e.target.checked) {
+      pStorage.addLine(e.target.value);
+    } else {
+      pStorage.removeLine(e.target.value);
+    }
+    updateChart();
   }
 </script>
 
@@ -192,13 +201,14 @@
     <div class="selects">
       <div class="label">{__('connection type')}</div>
       <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
-      <div class="select-block">
-        <div class="label">{__('research subject')}</div>
-        <Select
-          order={1}
-          onChange={selectSubject}
-          options={subjectOptions}
-          selected={selectedSubject} />
+      <h4>{__('display lines')}</h4>
+      <div class="line-options">
+        {#each subjectOptions as subject}
+          <div class="select-field">
+            <span class="select-label">{subject.label}</span>
+            <Toggle on:change={toggleLine} value={subject.value} />
+          </div>
+        {/each}
       </div>
       <div class="select-field">
         <span class="select-label">{__('x axis')}</span>
@@ -239,6 +249,9 @@
   main {
     display: flex;
     justify-content: space-evenly;
+  }
+  h4 {
+    text-align: left;
   }
   .back,
   .selects {

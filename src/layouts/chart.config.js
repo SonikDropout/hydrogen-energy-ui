@@ -1,13 +1,23 @@
-module.exports = function config(points, axesLabels) {
+module.exports = function config(axesLabels) {
   return {
     type: "line",
     data: {
       datasets: [
         {
-          data: points,
+          data: [],
           borderColor: "#1aa2dd",
           backgroundColor: "transparent"
-        }
+        },
+        {
+          data: [],
+          borderColor: "#f07e0f",
+          backgroundColor: "transparent"
+        },
+        {
+          data: [],
+          borderColor: "#37abb8",
+          backgroundColor: "transparent"
+        },
       ]
     },
     options: {

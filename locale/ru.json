@@ -61,5 +61,6 @@
   "set": "Установка",
   "set voltage": "Установка U, В",
   "set current": "Установка I, А",
-  "set power": "Установка P, Вт"
+  "set power": "Установка P, Вт",
+  "display lines": "Отображение на графике"
 }

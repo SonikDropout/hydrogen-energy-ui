@@ -33,7 +33,7 @@ class PointsStorage {
   }
 
   clear() {
-    this.lines = {};
+    for (let lineId in this.lines) this.lines[lineId] = [];
     this.rows = [];
   }
 
@@ -50,8 +50,8 @@ class PointsStorage {
   }
 
   _addPointToLines(row) {
-    for (let lineId in lines) {
-      lines[lineId].push({
+    for (let lineId in this.lines) {
+      this.lines[lineId].push({
         x: row[this._xCol + lineId],
         y: row[this._yCol + lineId],
       });
