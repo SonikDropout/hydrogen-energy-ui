@@ -277,9 +277,6 @@
     font-weight: 500;
     margin-bottom: auto;
   }
-  .select-block {
-    margin-bottom: 0.8rem;
-  }
   .select-field {
     margin: 1rem 0;
     display: flex;

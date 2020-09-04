@@ -60,8 +60,8 @@ class PointsStorage {
 
   _sortPoints() {
     if (this._xCol === 'time') return;
-    for (let lineId in lines)
-      lines[lineId] = this.lines[lineId].sort((p1, p2) => p1.x - p2.x);
+    for (let lineId in this.lines)
+      this.lines[lineId] = this.lines[lineId].sort((p1, p2) => p1.x - p2.x);
   }
 }
 
