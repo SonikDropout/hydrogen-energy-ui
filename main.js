@@ -82,8 +82,8 @@ function initPeripherals(win) {
 function launch() {
   const screenArea = electron.screen.getPrimaryDisplay().workAreaSize;
   win = new BrowserWindow({
-    width: isPi ? screenArea.width : 1024,
-    height: isPi ? screenArea.height : 600,
+    width: isPi ? screenArea.width : 1280,
+    height: isPi ? screenArea.height : 800,
     fullscreen: isPi,
     frame: false,
     webPreferences: {
