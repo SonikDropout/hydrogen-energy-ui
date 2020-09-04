@@ -26,15 +26,23 @@ class PointsStorage {
 
   setXCol(colName) {
     this._xCol = colName;
+    this._refreshLines();
   }
 
   setYCol(colName) {
     this._yCol = colName;
+    this._refreshLines();
   }
 
   clear() {
     for (let lineId in this.lines) this.lines[lineId] = [];
     this.rows = [];
+  }
+
+  _refreshLines() {
+    for (let lineId in this.lines) {
+      this.addLine(lineId);
+    }
   }
 
   _filterData() {

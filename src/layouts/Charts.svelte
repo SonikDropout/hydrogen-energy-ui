@@ -96,25 +96,21 @@
   }
 
   function resetCols(x, y) {
-    if (y) pStorage.setYCol(selectedY.name + selectedSubject.value);
-    if (x)
-      pStorage.setXCol(
-        selectedX.name + selectedX.name !== 'time' ? selectedSubject.value : '' // time same for all
-      );
+    if (y) pStorage.setYCol(selectedY.name);
+    if (x) pStorage.setXCol(selectedX.name);
+    updateChart();
   }
 
   function selectY(n) {
     selectedY = yOptions[n];
     resetCols(false, true);
     chart.options.scales.yAxes[0].scaleLabel.labelString = selectedY.symbol;
-    chart.update();
   }
 
   function selectX(n) {
     selectedX = xOptions[n];
     resetCols(true);
     chart.options.scales.xAxes[0].scaleLabel.labelString = selectedX.symbol;
-    chart.update();
   }
 
   function toggleDrawing() {
