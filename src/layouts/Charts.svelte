@@ -70,7 +70,7 @@
     {
       name: 'consumption',
       label: __('consumption'),
-      value: 2,
+      value: 3,
       symbol: `Q, ${__('ml/min')}`,
     },
   ];
