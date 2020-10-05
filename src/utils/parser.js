@@ -33,7 +33,7 @@ module.exports = function parse(buf) {
   for (const pos of [1, 2]) {
     let value = data['current' + pos].value * data['voltage' + pos].value;
     if (value < 0.001) value = 0;
-    data['power' + pos].value = +value.toPrecision(2);
+    data['power' + pos].value = +value.toPrecision(3);
   }
   return data;
 };
