@@ -162,7 +162,7 @@
 
   function startLogging() {
     ipcRenderer.send('startLog', {
-      name: `${__('HE')}_${selectedX.label}-${selectedY.label}`,
+      name: `Hydrogen_Energy`,
       worksheets: [__('first'), __('second'), __('first + second')],
       headers: Array(3).fill([
         `${__('time')}, ${__('s')}`,
