@@ -28,7 +28,7 @@ if (mode == 'development') {
 }
 
 function onCalibrationFinish(report) {
-  return function(criticalConcentration) {
+  return function (criticalConcentration) {
     settings.criticalHydrogenConcentration = criticalConcentration;
     console.log('WRITING SETTINGS TO FILE:', settings);
     fs.writeFile(SETTINGS_PATH, JSON.stringify(settings), () => {
@@ -40,7 +40,7 @@ function onCalibrationFinish(report) {
 function initPeripherals(win) {
   const serial = require(`./src/utils/serial${isPi ? '' : '.mock'}`);
   usbPort
-    .on('add', path => {
+    .on('add', (path) => {
       usbPath = path;
       win.webContents.send('usbConnected');
     })
@@ -49,23 +49,20 @@ function initPeripherals(win) {
       win.webContents.send('usbDisconnected');
     });
   serial
-    .on('data', d => win.webContents.send('serialData', d))
+    .on('data', (d) => win.webContents.send('serialData', d))
     .on('data', () => win.webContents.send('appInitialized'));
-  ipcMain.on('calibrationStart', e =>
+  ipcMain.on('calibrationStart', (e) =>
     serial.startCalibration(onCalibrationFinish(e.reply))
   );
-  ipcMain.on('saveFile', (_, options) => {
-    try {
-      logger.writeLog({
-        dir: usbPath,
-        cb: (e) => win.webContents.send('fileSaved', e),
-        ...options,
-      });
-    } catch (e) {
-      console.error(e);
-      win.webContents.send('fileSaved', e);
-    }
+  ipcMain.on('startLog', (_, options) => {
+    logger.createFile(options);
   });
+  ipcMain.on('logRow', (_, rows) => {
+    logger.writeRows(rows);
+  });
+  ipcMain.on('saveFile', () =>
+    logger.saveFile(usbPath, (err) => win.webContents.send('fileSaved', err))
+  );
   ipcMain.on('serialCommand', (_, bytes) => serial.sendCommand(bytes));
   ipcMain.on('usbStorageRequest', usbPort.init);
   ipcMain.on('ejectUSB', () =>
@@ -88,7 +85,7 @@ function launch() {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
-      preload: path.join(__dirname, 'src', 'preload.js')
+      preload: path.join(__dirname, 'src', 'preload.js'),
     },
   });
 
@@ -102,7 +99,7 @@ function launch() {
 
   const peripherals = initPeripherals(win);
 
-  win.on('closed', function() {
+  win.on('closed', function () {
     peripherals.removeAllListeners();
     win = null;
   });

@@ -2,6 +2,7 @@
   import Button from '../atoms/Button';
   import { ipcRenderer } from 'electron';
   import { fly } from 'svelte/transition';
+  import { __ } from '../constants';
   export let disabled;
 
   let isSaving, isSaveFailed, saveMessage, usbConnected;
@@ -12,10 +13,10 @@
 
   function handleSaved(e, err) {
     if (err) {
-      saveMessage = 'Не удалось сохранить файл';
+      saveMessage = __('save error');;
       isSaveFailed = true;
     } else {
-      saveMessage = 'Файл успешно сохранен';
+      saveMessage = __('save success');;
     }
     disabled = false;
     isSaving = false;

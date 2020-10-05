@@ -51,12 +51,6 @@
       value: 1,
       symbol: `I, ${__('A')}`,
     },
-    {
-      name: 'consumption',
-      label: __('consumption'),
-      value: 2,
-      symbol: `Q, ${__('ml/min')}`,
-    },
   ];
 
   const yOptions = [
@@ -73,6 +67,12 @@
       symbol: `I, ${__('A')}`,
     },
     { name: 'power', label: __('power'), value: 2, symbol: `P, ${__('W')}` },
+    {
+      name: 'consumption',
+      label: __('consumption'),
+      value: 2,
+      symbol: `Q, ${__('ml/min')}`,
+    },
   ];
 
   let selectedX = xOptions[0],
@@ -83,9 +83,7 @@
     selectedSubject = subjectOptions[0],
     isDrawing,
     unsubscribeData,
-    saveMessage,
     chart,
-    fileSaving,
     timeStart;
 
   $: startDisabled = !selectedSubject;
@@ -118,6 +116,7 @@
       unsubscribeData();
     } else {
       subscribeData();
+      startLogging();
     }
     isDrawing = !isDrawing;
   }
@@ -127,7 +126,14 @@
     timeStart = Date.now();
     noData = false;
     unsubscribeData = data.subscribe(d => {
-      pStorage.addRow(getEntries(d));
+      const row = getEntries(d);
+      pStorage.addRow(row);
+      const logRow = Object.values(row);
+      ipcRenderer.send('logRow', [
+        logRow.slice(0, 5),
+        [logRow[0], ...logRow.slice(5, 9)],
+        [logRow[0], ...logRow.slice(9, 13)],
+      ]);
       updateChart();
     });
   }
@@ -154,8 +160,8 @@
     chart.update();
   }
 
-  function saveFile() {
-    ipcRenderer.send('writeExcel', {
+  function startLogging() {
+    ipcRenderer.send('startLog', {
       name: `${__('HE')}_${selectedX.label}-${selectedY.label}`,
       worksheets: [__('first'), __('second'), __('first + second')],
       headers: Array(3).fill([
@@ -165,19 +171,6 @@
         `${__('power')}, ${__('W')}`,
         `${__('consumption')}, ${__('ml/min')}`,
       ]),
-      rows: pStorage.rows.map(row => [
-        row.slice(0, 5),
-        [row[0], ...row.slice(5, 9)],
-        [row[0], ...row.slice(9, 13)],
-      ]),
-    });
-    fileSaving = true;
-    ipcRenderer.once('fileSaved', (e, err) => {
-      fileSaving = false;
-      if (err) {
-        saveMessage = __('save error');
-        console.error(err);
-      } else saveMessage = __('save success');
     });
   }
 
@@ -236,7 +229,7 @@
       <Button on:click={onPrev}>{__('back')}</Button>
     </div>
     <div class="save">
-      <SaveButton />
+      <SaveButton disabled={noData} />
     </div>
   </footer>
 </div>

@@ -9,17 +9,13 @@ let wb,
   dataStyle,
   row = 1;
 
-function writeLog({ name, dir, rows, worksheets, headers, cb }) {
-  createFile(name);
-  addWorksheets(worksheets, headers);
-  writeRows(rows);
-  saveFile(dir, cb, rows.length);
-}
-
-function createFile(fn) {
-  fileName = fn + '_' + getFileDate();
+function createFile(options) {
+  fileName = options.name + '_' + getFileDate();
   wb = new Workbook();
+  ws = [];
+  row = 1;
   if (!headerStyle) createStyles();
+  addWorksheets(options.worksheets, options.headers);
 }
 
 function addWorksheets(worksheets, headers) {
@@ -35,28 +31,22 @@ function addWorksheets(worksheets, headers) {
   row++;
 }
 
-function writeRows(entries) {
-  for (let i = 0; i < entries.length; i++) {
-    for (let j = 0; j < entries[i].length; ++j) {
-      for (let k = 0; k < entries[i][j].length; ++k) {
-        ws[j]
-          .cell(row, k + 1)
-          .number(entries[i][j][k])
-          .style(dataStyle);
-      }
+function writeRows(rows) {
+  for (let j = 0; j < rows.length; ++j) {
+    for (let k = 0; k < rows[j].length; ++k) {
+      ws[j]
+        .cell(row++, k + 1)
+        .number(rows[j][k])
+        .style(dataStyle);
     }
-    row++;
   }
 }
 
-function saveFile(dir, cb, rn) {
+function saveFile(dir, cb) {
   const logPath = path.join(dir, fileName + '.xlsx');
   console.log('writing log to:', logPath);
-  delayedCb = (...args) => setTimeout(cb, rn * 100, ...args)
+  delayedCb = (...args) => setTimeout(cb, 60 * 1000, ...args);
   wb.write(logPath, delayedCb);
-  wb = fileName = void 0;
-  ws = [];
-  row = 1;
 }
 
 function createStyles() {
@@ -94,5 +84,7 @@ function generateBorders() {
 }
 
 module.exports = {
-  writeLog,
+  createFile,
+  writeRows,
+  saveFile
 };

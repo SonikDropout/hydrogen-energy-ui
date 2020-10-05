@@ -1,93 +1,93 @@
 const usbDetect = require('usb-detection');
 const EventEmitter = require('events');
-const { exec } = require('child_process');
 const { debounce } = require('./others');
+const { exec } = require('child_process');
 
 const usbPort = new EventEmitter();
+const winFindCmd = 'wmic logicaldisk where drivetype=2 get Name';
+const linuxFindCmd = 'lsblk --json -o name,path,rm,mountpoint --tree';
 let connectedDevice;
 
-const getDriveList = () => new Promise((resolve, reject) => {
-  exec('lsblk -o +path --json', (err, output) => {
-    if (err) reject(err);
-    else resolve(JSON.parse(output).blockdevices);
-  });
-});
-
-Object.defineProperty(usbPort, 'isDeviceConnected', {
-  get: function() {
-    return !!connectedDevice;
-  },
-});
-
-const debouncedFind = debounce(findDrive, 1500);
+const debouncedFindDrive = debounce(findDrive, 1000);
 
 usbDetect.startMonitoring();
-usbDetect.on('add', debouncedFind);
+usbDetect.on('add', debouncedFindDrive);
 usbDetect.on('remove', handleRemove);
 
 function findDrive() {
-  getDriveList()
-    .then(drives => {
-      const device = drives.find(dev => dev.rm);
-      if (!device) return;
-      if (device.children) {
-        connectedDevice = device.children[0].path;
-        mountDevice(connectedDevice);
-      } else {
-        connectedDevice = device.path;
-        mountDevice(connectedDevice);
-      }
-    })
-    .catch(err => console.error(err.message));
+  if (process.platform === 'win32') winFindDrive();
+  else linuxFindDrive();
 }
 
-function mountDevice(device) {
+function winFindDrive() {
+  exec(winFindCmd, (err, output) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    connectedDevice = output.split('\r\n')[1].slice(0, 2);
+    if (connectedDevice) usbPort.emit('add', connectedDevice);
+  });
+}
+
+function linuxFindDrive() {
+  exec(linuxFindCmd, (err, output) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    linuxFindSuitableDevice(JSON.parse(output).blockdevices);
+  });
+}
+
+function linuxFindSuitableDevice(drives) {
+  const device = drives.find((dev) => dev.rm);
+  if (!device) return;
+  if (device.children) {
+    mountLinuxDevice(device.children[0]);
+  } else {
+    mountLinuxDevice(device);
+  }
+}
+
+function mountLinuxDevice(device) {
+  if (device.mountpoint) {
+    connectedDevice = device.path;
+    usbPort.emit('add', device.mountpoint);
+    return;
+  }
+  exec(`sudo mount ${device.path} /media/usb1 -o uid=1000`, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    connectedDevice = device.path;
+    usbPort.emit('add', '/media/usb1');
+  });
+}
+
+function handleRemove() {
   exec(
-    `sudo mount ${device} /media/usb1 -o uid=1000`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(error.message);
+    process.platform === 'linux' ? linuxFindCmd : winFindCmd,
+    (err, output) => {
+      if (err) {
+        console.error(err);
+        usbPort.emit('remove');
         return;
       }
-      if (stderr) {
-        console.error(stderr);
-        return;
-      }
-      usbPort.emit('add', '/media/usb1');
+      if (!output.includes(connectedDevice)) usbPort.emit('remove');
     }
   );
 }
 
-function handleRemove() {
-  getDriveList()
-    .then(devices => {
-      const device = devices.find(dev => dev.rm);
-      if (!device) {
-        emitRemove();
-        return;
-      }
-      if (device.children && device.children[0].path !== connectedDevice)
-        emitRemove();
-      else if (device.path !== connectedDevice) emitRemove();
-    })
-    .catch(err => {
-      console.error(err.message);
-      emitRemove();
-    });
-}
+usbPort.init = findDrive;
 
-function emitRemove() {
-  usbPort.emit('remove');
-  connectedDevice = void 0;
-}
-
-usbPort.eject = cb => {
-  exec(`sudo eject ${connectedDevice}`, () => {
+usbPort.eject = function eject() {
+  exec(`sudo umount ${connectedDevice}`, (err) => {
+    if (err) console.error(err);
     connectedDevice = void 0;
-    cb();
+    usbPort.emit('remove');
   });
 };
-
-usbPort.init = findDrive;
 
 module.exports = usbPort;
