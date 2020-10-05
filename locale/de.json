@@ -61,5 +61,6 @@
   "set": "einstellen",
   "set current": "I(A) einstellen",
   "set voltage": "U(V) einstellen",
-  "set power": "P(W) einstellen"
+  "set power": "P(W) einstellen",
+  "reset": "Parameter zurücksetzen"
 }

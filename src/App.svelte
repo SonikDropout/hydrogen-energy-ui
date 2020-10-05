@@ -3,16 +3,14 @@
   import FCResearch from './layouts/FCResearch';
   import Charts from './layouts/Charts';
   import Warnings from './molecules/Warnings';
-  import CalibartionButton from './molecules/CalibrationButton';
-  import CalibartionModal from './molecules/CalibartionModal';
+  import ResetButton from './molecules/ResetButton';
   import { onMount } from 'svelte';
   import { ipcRenderer } from 'electron';
   import { appInitialized } from './stores';
   import RangeInput from './molecules/RangeInput';
   import {version} from '../package.json'
   let slide = 0;
-  let showModal = false,
-    startX, dragDiff;
+  let     startX, dragDiff;
   ipcRenderer.on('calibrationFinish', () =>
     setTimeout(() => (showModal = false), 2000)
   );
@@ -32,10 +30,7 @@
 <div class="version">v {version}</div>
 {#if $appInitialized}
   <Warnings />
-  <CalibartionButton onClick={() => (showModal = true)} />
-  {#if showModal}
-    <CalibartionModal />
-  {/if}
+  <ResetButton />
   <div class="content slide-{slide}">
     <SetParams onNext={incrementSlide} />
     <FCResearch onNext={incrementSlide} onPrev={decrementSlide} />
