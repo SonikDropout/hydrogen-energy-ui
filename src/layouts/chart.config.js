@@ -1,3 +1,5 @@
+const { __ } = require('../constants');
+
 module.exports = function config(axesLabels) {
   return {
     type: "line",
@@ -6,16 +8,20 @@ module.exports = function config(axesLabels) {
         {
           data: [],
           borderColor: "#1aa2dd",
-          backgroundColor: "transparent"
+          backgroundColor: "transparent",
+          label: __('first'),
         },
         {
           data: [],
           borderColor: "#f07e0f",
-          backgroundColor: "transparent"
+          backgroundColor: "transparent",
+          label: __('second'),
         },
         {
           data: [],
-          borderColor: "#37abb8",
+          borderColor: "rgba(55,171,184,.5)",
+          borderWidth: 5,
+          label: __('first + second'),
           backgroundColor: "transparent"
         },
       ]
@@ -28,9 +34,6 @@ module.exports = function config(axesLabels) {
         line: {
           tension: 0 // disables bezier curves
         }
-      },
-      legend: {
-        display: false
       },
       scales: {
         xAxes: [
