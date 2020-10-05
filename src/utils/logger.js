@@ -32,6 +32,7 @@ function addWorksheets(worksheets, headers) {
 }
 
 function writeRows(rows) {
+  if (!ws[0]) return;
   for (let j = 0; j < rows.length; ++j) {
     for (let k = 0; k < rows[j].length; ++k) {
       ws[j]
