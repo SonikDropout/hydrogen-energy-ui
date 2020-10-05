@@ -67,6 +67,5 @@ function close() {
 
 emitter.close = close;
 emitter.sendCommand = sendCommand;
-emitter.startCalibration = startCalibration;
 
 module.exports = emitter;
