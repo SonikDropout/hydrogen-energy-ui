@@ -16,8 +16,8 @@
     border: 1px solid var(--text-color);
     width: 6rem;
     font-size: 1rem;
-    bottom: 1rem;
-    right: 1rem;
+    top: 1rem;
+    left: 1rem;
     z-index: 9002;
     outline: none;
   }

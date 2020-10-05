@@ -44,6 +44,7 @@
     color: #999;
     position: fixed;
     padding: 0.4rem 0.8rem;
+    bottom: 0;
   }
   .content {
     width: 300vw;
