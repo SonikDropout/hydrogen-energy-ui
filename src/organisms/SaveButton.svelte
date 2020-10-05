@@ -3,6 +3,7 @@
   import { ipcRenderer } from 'electron';
   import { fly } from 'svelte/transition';
   import { __ } from '../constants';
+  import Portal from '../atoms/Portal';
   export let disabled;
 
   let isSaving, isSaveFailed, saveMessage, usbConnected;
@@ -13,10 +14,10 @@
 
   function handleSaved(e, err) {
     if (err) {
-      saveMessage = __('save error');;
+      saveMessage = __('save error');
       isSaveFailed = true;
     } else {
-      saveMessage = __('save success');;
+      saveMessage = __('save success');
     }
     disabled = false;
     isSaving = false;
@@ -47,11 +48,13 @@
   Сохранить данные на usb-устройство
 </Button>
 {#if saveMessage}
-  <div class="popup" transition:fly={{ y: -200 }}>
-    <span on:click={closePopup} class="popup-close">&#x2573;</span>
-    <p class:error={isSaveFailed}>{saveMessage}</p>
-    <Button on:click={ejectUSB} size="sm">извлечь</Button>
-  </div>
+  <Portal>
+    <div class="popup" transition:fly={{ y: -200 }}>
+      <span on:click={closePopup} class="popup-close">&#x2573;</span>
+      <p class:error={isSaveFailed}>{saveMessage}</p>
+      <Button on:click={ejectUSB} size="sm">извлечь</Button>
+    </div>
+  </Portal>
 {/if}
 
 <style>
