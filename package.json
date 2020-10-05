@@ -2,7 +2,9 @@
   "name": "hydrogen-energy",
   "version": "1.0.0",
   "description": "GUI for hydrogen energy stand",
-  "repository": "https://github.com/SonikdDropout/hydrogen-energy-ui.git",
+  "repository": {
+    "url": "https://github.com/SonikdDropout/hydrogen-energy-ui.git"
+  },
   "main": "./main.js",
   "scripts": {
     "wp-watch": "webpack --watch",
