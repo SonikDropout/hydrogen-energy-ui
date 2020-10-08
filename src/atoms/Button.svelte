@@ -17,7 +17,7 @@
   }
 
   button:disabled {
-    opacity: 0.8;
+    opacity: 0.6;
   }
 
   button:active {

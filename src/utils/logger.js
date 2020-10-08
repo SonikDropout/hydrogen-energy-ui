@@ -36,11 +36,12 @@ function writeRows(rows) {
   for (let j = 0; j < rows.length; ++j) {
     for (let k = 0; k < rows[j].length; ++k) {
       ws[j]
-        .cell(row++, k + 1)
+        .cell(row, k + 1)
         .number(rows[j][k])
         .style(dataStyle);
     }
   }
+  row++;
 }
 
 function saveFile(dir, cb) {
