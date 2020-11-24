@@ -1,5 +1,5 @@
 {
-  "name": "hydrogen-energy",
+  "name": "hydrogen-energy-ui",
   "version": "1.0.1",
   "description": "GUI for hydrogen energy stand",
   "repository": {
@@ -50,7 +50,7 @@
   "build": {
     "directories": {},
     "linux": {
-      "executableName": "HydrogenEnergy",
+      "executableName": "hydrogen-energy-ui",
       "icon": "doc/icon.png",
       "category": "education"
     }
