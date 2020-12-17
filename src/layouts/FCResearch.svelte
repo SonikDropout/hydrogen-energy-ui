@@ -4,6 +4,7 @@
   import Toggle from '../atoms/Toggle';
   import RangeInput from '../molecules/RangeInput';
   import { data } from '../stores';
+  import ResetButton from '../molecules/ResetButton';
   import { COMMANDS, CONSTRAINTS, __ } from '../constants';
   import { ipcRenderer } from 'electron';
   export let onPrev;
@@ -223,6 +224,7 @@
     </div>
     <div class="col" />
   </footer>
+  <ResetButton />
 </div>
 
 <style>

@@ -10,7 +10,7 @@
 
 <style>
   button {
-    position: fixed;
+    position: absolute;
     background: transparent;
     border-radius: .4rem;
     border: 1px solid var(--text-color);

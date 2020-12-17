@@ -3,7 +3,6 @@
   import FCResearch from './layouts/FCResearch';
   import Charts from './layouts/Charts';
   import Warnings from './molecules/Warnings';
-  import ResetButton from './molecules/ResetButton';
   import { onMount } from 'svelte';
   import { ipcRenderer } from 'electron';
   import { appInitialized } from './stores';
@@ -30,7 +29,6 @@
 <div class="version">v {version}</div>
 {#if $appInitialized}
   <Warnings />
-  <ResetButton />
   <div class="content slide-{slide}">
     <SetParams onNext={incrementSlide} />
     <FCResearch onNext={incrementSlide} onPrev={decrementSlide} />
