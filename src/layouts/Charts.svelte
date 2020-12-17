@@ -164,8 +164,8 @@
       worksheets: [__('first'), __('second'), __('first + second')],
       headers: Array(3).fill([
         `${__('time')}, ${__('s')}`,
-        `${__('voltage')}, ${__('V')}`,
         `${__('current')}, ${__('A')}`,
+        `${__('voltage')}, ${__('V')}`,
         `${__('power')}, ${__('W')}`,
         `${__('consumption')}, ${__('ml/min')}`,
       ]),
