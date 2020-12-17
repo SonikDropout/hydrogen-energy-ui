@@ -31,11 +31,7 @@
 
   const subjects = ['1', '2', 'Common'];
 
-  const pointEntries = subjects
-    .map(name =>
-      ['current', 'voltage', 'power', 'consumption'].map(id => id + name)
-    )
-    .flat();
+  const pointEntries = ['current', 'voltage', 'power', 'consumption'];
 
   const subjectOptions = [
     { label: __('first'), value: '1' },
@@ -128,25 +124,27 @@
     unsubscribeData = data.subscribe(d => {
       const row = getEntries(d);
       pStorage.addRow(row);
-      const logRow = Object.values(row);
-      ipcRenderer.send('logRow', [
-        logRow.slice(0, 5),
-        [logRow[0], ...logRow.slice(5, 9)],
-        [logRow[0], ...logRow.slice(9, 13)],
-      ]);
+      ipcRenderer.send('logRow', getLogRow(row));
       updateChart();
     });
   }
 
   function getEntries(data) {
     const row = {};
-    for (let key of subjects) {
-      row['time' + key] = Math.round((Date.now() - timeStart) / 1000);
-    }
-    for (let key of pointEntries) {
-      row[key] = data[key].value;
+    const elapsed = Math.round((Date.now() - timeStart) / 1000);
+    for (let id of subjects) {
+      row['time' + id] = elapsed;
+      for (let name of pointEntries) {
+        row[name + id] = data[name + id].value;
+      }
     }
     return row;
+  }
+
+  function getLogRow(row) {
+    return subjects.map(id =>
+      [row['time' + id]].concat(pointEntries.map(name => row[name + id]))
+    );
   }
 
   function updateChart() {
