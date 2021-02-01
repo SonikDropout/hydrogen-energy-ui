@@ -1,4 +1,4 @@
-const { FC_DATA, STATE_DATA } = require('../constants');
+const { FC_DATA, STATE_DATA, __ } = require('../constants');
 const EventEmitter = require('events');
 const { clone } = require('./others');
 
@@ -19,7 +19,7 @@ function sendData() {
 }
 
 function randomData() {
-  const d = clone(FC_DATA)
+  const d = clone(FC_DATA);
   for (const key in FC_DATA) {
     d[key].value = randInt(10);
   }
@@ -29,9 +29,8 @@ function randomData() {
   for (let pos of [1, 2]) {
     d['power' + pos] = {
       symbol: 'P',
-      units: 'Вт',
-      value:
-        d['current' + pos].value * d['voltage' + pos].value,
+      units: 'W',
+      value: d['current' + pos].value * d['voltage' + pos].value,
     };
   }
   return d;
@@ -42,6 +41,6 @@ emitter.sendCommand = console.log.bind(console, 'Sending command to serial:');
 emitter.startCalibration = (cb) => {
   console.log('Start hydrogen sensor calibration');
   cb(0);
-}
+};
 
 module.exports = emitter;

@@ -37,7 +37,7 @@
   "research subject": "Объект исследования",
   "go to research": "Перейти к исследованиям",
   "start": "Старт",
-  "stop":"Стоп",
+  "stop": "Стоп",
   "x axis": "Ось X",
   "y axis": "Ось Y",
   "save usb": "Сохранить данные на USB-устройство",
@@ -63,5 +63,8 @@
   "set current": "Установка I, А",
   "set power": "Установка P, Вт",
   "display lines": "Отображение на графике",
-  "reset": "Сброс настроек"
+  "reset": "Сброс настроек",
+  "bar": "бар",
+  "internal load current": "I<sub>внутр. нагр.</sub>",
+  "external load current": "I<sub>внеш. нагр.</sub>"
 }

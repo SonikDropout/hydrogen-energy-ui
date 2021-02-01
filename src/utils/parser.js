@@ -1,4 +1,4 @@
-const { SEPARATORS, FC_DATA, STATE_DATA } = require('../constants');
+const { SEPARATORS, FC_DATA, STATE_DATA, __ } = require('../constants');
 const { clone } = require('./others');
 
 function validate(buffer) {
@@ -10,11 +10,11 @@ const data = {
   ...clone(FC_DATA),
   power1: {
     symbol: 'P',
-    units: 'Вт',
+    units: 'W',
   },
   power2: {
     symbol: 'P',
-    units: 'Вт',
+    units: 'W',
   },
 };
 

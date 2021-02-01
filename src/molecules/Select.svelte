@@ -1,10 +1,10 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { __ } from '../constants';
+  import { __ } from '../utils/translations';
   export let onChange;
   export let options;
   export let disabled;
-  export let selected = { label: __('select') };
+  export let selected = { label: 'select' };
   export let order = 0;
 
   onMount(() => document.addEventListener('click', handleClickOutside));
@@ -49,7 +49,7 @@
     class:active
     class:expand={optionsVisible}>
     <div class="selected" on:click={toggleOptions}>
-      <span class="label" title={selected.label}>{selected.label}</span>
+      <span class="label" title={selected.label}>{$__(selected.label)}</span>
       <span class="arrow" />
     </div>
     {#if optionsVisible}
@@ -59,7 +59,7 @@
             {#if icon}
               <i class="icon icon-{icon}" />
             {/if}
-            {label}
+            {$__(label)}
           </li>
         {/each}
       </ul>

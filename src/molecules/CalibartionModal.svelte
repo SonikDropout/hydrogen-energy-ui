@@ -1,13 +1,13 @@
 <script>
   import { ipcRenderer } from 'electron';
-  import {__} from '../constants';
+  import { __ } from '../utils/translations';
   let highLevel;
   ipcRenderer.on('calibrationFinish', (e, v) => (highLevel = v));
 </script>
 
 <div class="modal">
   <div class="modal-body">
-    <h3>{__('sensor calibration')}</h3>
+    <h3>{$__('sensor calibration')}</h3>
     {#if highLevel !== void 0}
       <strong>{highLevel}</strong>
     {/if}

@@ -1,6 +1,7 @@
 <script>
   import { data } from '../stores';
-  import { CONNECTION_TYPES, __ } from '../constants';
+  import { CONNECTION_TYPES } from '../constants';
+  import { __ } from '../utils/translations';
   import Select from '../molecules/Select';
   import Button from '../atoms/Button';
   import Toggle from '../atoms/Toggle';
@@ -15,15 +16,26 @@
   export let onPrev;
 
   onMount(() => {
+    chartConfig = configureChart({
+      x: selectedX.symbol,
+      y: selectedY.symbol,
+    });
     chart = new Chart(
       document.getElementById('chart').getContext('2d'),
-      configureChart({
-        x: selectedX.symbol,
-        y: selectedY.symbol,
-      })
+      chartConfig
     );
     chart.options.onClick = chart.resetZoom;
+    monitorLegendLng();
   });
+
+  function monitorLegendLng() {
+    __.subscribe(t => {
+      chart.data.datasets.forEach((ds, i) => {
+        ds.label = t(chartConfig.data.datasets[i].label);
+      });
+      chart.update();
+    });
+  }
 
   ipcRenderer.send('usbStorageRequest');
   ipcRenderer.on('usbConnected', () => (usbAttached = true));
@@ -34,40 +46,40 @@
   const pointEntries = ['current', 'voltage', 'power', 'consumption'];
 
   const subjectOptions = [
-    { label: __('first'), value: '1' },
-    { label: __('second'), value: '2' },
-    { label: __('first + second'), value: 'Common' },
+    { label: 'first', value: '1' },
+    { label: 'second', value: '2' },
+    { label: 'first + second', value: 'Common' },
   ];
 
   const xOptions = [
-    { name: 'time', label: __('time'), value: 0, symbol: `t, ${__('s')}` },
+    { name: 'time', label: 'time', value: 0, symbol: `t, s` },
     {
       name: 'current',
-      label: __('current'),
+      label: 'current',
       value: 1,
-      symbol: `I, ${__('A')}`,
+      symbol: `I, A`,
     },
   ];
 
   const yOptions = [
     {
       name: 'voltage',
-      label: __('voltage'),
+      label: 'voltage',
       value: 0,
-      symbol: `U, ${__('V')}`,
+      symbol: `U, V`,
     },
     {
       name: 'current',
-      label: __('current'),
+      label: 'current',
       value: 1,
-      symbol: `I, ${__('A')}`,
+      symbol: `I, A`,
     },
-    { name: 'power', label: __('power'), value: 2, symbol: `P, ${__('W')}` },
+    { name: 'power', label: 'power', value: 2, symbol: `P, W` },
     {
       name: 'consumption',
-      label: __('consumption'),
+      label: 'consumption',
       value: 3,
-      symbol: `Q, ${__('ml/min')}`,
+      symbol: `Q, ml/min`,
     },
   ];
 
@@ -80,7 +92,10 @@
     isDrawing,
     unsubscribeData,
     chart,
+    chartConfig,
     timeStart;
+
+  $: connectionType = CONNECTION_TYPES[$data.connectionType];
 
   $: startDisabled = !selectedSubject;
 
@@ -97,14 +112,14 @@
 
   function selectY(n) {
     selectedY = yOptions[n];
-    resetCols(false, true);
     chart.options.scales.yAxes[0].scaleLabel.labelString = selectedY.symbol;
+    resetCols(false, true);
   }
 
   function selectX(n) {
     selectedX = xOptions[n];
-    resetCols(true);
     chart.options.scales.xAxes[0].scaleLabel.labelString = selectedX.symbol;
+    resetCols(true);
   }
 
   function toggleDrawing() {
@@ -161,13 +176,13 @@
   function startLogging() {
     ipcRenderer.send('startLog', {
       name: `Hydrogen_Energy`,
-      worksheets: [__('first'), __('second'), __('first + second')],
+      worksheets: [$__('first'), $__('second'), $__('first + second')],
       headers: Array(3).fill([
-        `${__('time')}, ${__('s')}`,
-        `${__('current')}, ${__('A')}`,
-        `${__('voltage')}, ${__('V')}`,
-        `${__('power')}, ${__('W')}`,
-        `${__('consumption')}, ${__('ml/min')}`,
+        `${$__('time')}, ${$__('s')}`,
+        `${$__('current')}, ${$__('A')}`,
+        `${$__('voltage')}, ${$__('V')}`,
+        `${$__('power')}, ${$__('W')}`,
+        `${$__('consumption')}, ${$__('ml/min')}`,
       ]),
     });
   }
@@ -183,22 +198,22 @@
 </script>
 
 <div class="layout">
-  <header>{__('charts')}</header>
+  <header>{$__('charts')}</header>
   <main>
     <div class="selects">
-      <div class="label">{__('connection type')}</div>
-      <div class="ct">{CONNECTION_TYPES[$data.connectionType]}</div>
-      <h4>{__('display lines')}</h4>
+      <div class="label">{$__('connection type')}</div>
+      <div class="ct">{$__(connectionType)}</div>
+      <h4>{$__('display lines')}</h4>
       <div class="line-options">
         {#each subjectOptions as subject}
           <div class="select-field">
-            <span class="select-label">{subject.label}</span>
+            <span class="select-label">{$__(subject.label)}</span>
             <Toggle on:change={toggleLine} value={subject.value} />
           </div>
         {/each}
       </div>
       <div class="select-field">
-        <span class="select-label">{__('x axis')}</span>
+        <span class="select-label">{$__('x axis')}</span>
         <Select
           order={2}
           onChange={selectX}
@@ -206,7 +221,7 @@
           selected={selectedX} />
       </div>
       <div class="select-field">
-        <span class="select-label">{__('y axis')}</span>
+        <span class="select-label">{$__('y axis')}</span>
         <Select
           order={3}
           onChange={selectY}
@@ -215,7 +230,7 @@
       </div>
 
       <Button on:click={toggleDrawing} disabled={startDisabled}>
-        {isDrawing ? __('stop') : __('start')}
+        {isDrawing ? $__('stop') : $__('start')}
       </Button>
     </div>
     <div class="chart">
@@ -224,7 +239,7 @@
   </main>
   <footer>
     <div class="back">
-      <Button on:click={onPrev}>{__('back')}</Button>
+      <Button on:click={onPrev}>{$__('back')}</Button>
     </div>
     <div class="save">
       <SaveButton disabled={noData} />

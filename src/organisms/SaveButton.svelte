@@ -2,7 +2,7 @@
   import Button from '../atoms/Button';
   import { ipcRenderer } from 'electron';
   import { fly } from 'svelte/transition';
-  import { __ } from '../constants';
+  import { __ } from '../utils/translations';
   import Portal from '../atoms/Portal';
   export let disabled;
 
@@ -14,10 +14,10 @@
 
   function handleSaved(e, err) {
     if (err) {
-      saveMessage = __('save error');
+      saveMessage = $__('save error');
       isSaveFailed = true;
     } else {
-      saveMessage = __('save success');
+      saveMessage = $__('save success');
     }
     disabled = false;
     isSaving = false;
@@ -45,7 +45,7 @@
   {#if isSaving}
     <span class="spinner" />
   {/if}
-  Сохранить данные на usb-устройство
+  {$__('save usb')}
 </Button>
 {#if saveMessage}
   <Portal>

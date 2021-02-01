@@ -1,87 +1,85 @@
-const { __ } = require('../constants');
-
-module.exports = function config(axesLabels) {
+module.exports = function configure(axesLabels) {
   return {
-    type: "line",
+    type: 'line',
     data: {
       datasets: [
         {
           data: [],
-          borderColor: "#1aa2dd",
-          backgroundColor: "transparent",
-          label: __('first'),
+          borderColor: '#1aa2dd',
+          backgroundColor: 'transparent',
+          label: 'first',
         },
         {
           data: [],
-          borderColor: "#f07e0f",
-          backgroundColor: "transparent",
-          label: __('second'),
+          borderColor: '#f07e0f',
+          backgroundColor: 'transparent',
+          label: 'second',
         },
         {
           data: [],
-          borderColor: "rgba(55,171,184,.5)",
+          borderColor: 'rgba(55,171,184,.5)',
           borderWidth: 5,
-          label: __('first + second'),
-          backgroundColor: "transparent"
+          label: 'first + second',
+          backgroundColor: 'transparent',
         },
-      ]
+      ],
     },
     options: {
       elements: {
         point: {
-          radius: 1
+          radius: 1,
         },
         line: {
-          tension: 0 // disables bezier curves
-        }
+          tension: 0, // disables bezier curves
+        },
       },
       scales: {
         xAxes: [
           {
             display: true,
-            type: "linear",
+            type: 'linear',
             scaleLabel: {
               display: true,
-              labelString: axesLabels.x
+              labelString: axesLabels.x,
             },
             ticks: {
-              maxTickLimit: 8
-            }
-          }
+              maxTickLimit: 8,
+            },
+          },
         ],
         yAxes: [
           {
             display: true,
-            type: "linear",
+            type: 'linear',
             scaleLabel: {
               display: true,
-              labelString: axesLabels.y
+              labelString: axesLabels.y,
             },
             ticks: {
-              maxTickLimit: 8
-            }
-          }
-        ]
+              maxTickLimit: 8,
+            },
+          },
+        ],
       },
       animation: {
-        duration: 0 // general animation time
+        duration: 0, // general animation time
       },
       hover: {
-        animationDuration: 0 // duration of animations when hovering an item
+        animationDuration: 0, // duration of animations when hovering an item
       },
       responsiveAnimationDuration: 0, // animation duration after a resize
       plugins: {
         zoom: {
           pan: {
             enabled: true,
-            mode: "x"
+            mode: 'x',
           },
           zoom: {
             enabled: true,
-            mode: "x"
-          }
-        }
-      }
-    }
-  }
-}
+            mode: 'x',
+          },
+        },
+      },
+    },
+  };
+};

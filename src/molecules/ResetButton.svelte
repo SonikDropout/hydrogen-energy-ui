@@ -1,12 +1,12 @@
 <script>
   import { ipcRenderer } from 'electron';
-  import {__} from '../constants';
+  import { __ } from '../utils/translations';
 </script>
 
 <button
   on:click={() => {
     ipcRenderer.send('serialCommand', [80, 120]);
-  }} >{__('reset')}</button>
+  }} >{$__('reset')}</button>
 
 <style>
   button {

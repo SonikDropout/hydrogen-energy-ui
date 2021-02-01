@@ -1,10 +1,5 @@
 const { mergeRename } = require('./utils/others');
-const i18n = require('./utils/i18n');
 const path = require('path');
-
-i18n.loadJSON(path.join(__dirname, '..', 'locale', 'de.json'), 'de');
-i18n.loadJSON(path.join(__dirname, '..', 'locale', 'ru.json'), 'ru');
-i18n.setLocale('ru');
 
 const IS_RPI = process.platform === 'linux' && process.arch == 'arm';
 const PORT = {
@@ -26,12 +21,12 @@ const LOW_PRESSURE = 0.2;
 const SINGLE_DATA = {
   voltage: {
     symbol: 'U',
-    units: i18n.__('V'),
+    units: 'V',
     divider: 1000,
   },
   current: {
     symbol: 'I',
-    units: i18n.__('A'),
+    units: 'A',
     divider: 1000,
   },
   temp1: {
@@ -45,16 +40,16 @@ const SINGLE_DATA = {
     divider: 10,
   },
   blowDuration: {
-    label: i18n.__('blow duration'),
-    units: i18n.__('ms'),
+    label: 'blow duration',
+    units: 'ms',
   },
   blowPeriod: {
-    label: i18n.__('blod period'),
-    units: i18n.__('s'),
+    label: 'blod period',
+    units: 's',
   },
   fanPower: {
-    label: i18n.__('fan power'),
-    units: i18n.__('percent'),
+    label: 'fan power',
+    units: 'percent',
   },
 };
 
@@ -65,13 +60,13 @@ const COMMON_DATA = {
     divider: 10,
   },
   currentExternal: {
-    symbol: `I<sub>${i18n.__('external load')}</sub>`,
-    units: i18n.__('A'),
+    symbol: `external load current`,
+    units: 'A',
     divider: 1000,
   },
   currentInternal: {
-    symbol: `I<sub>${i18n.__('internal load')}</sub>`,
-    units: i18n.__('A'),
+    symbol: `internal load current`,
+    units: 'A',
     divider: 1000,
   },
   loadValue: {
@@ -79,15 +74,15 @@ const COMMON_DATA = {
   },
   consumption1: {
     symbol: 'Q',
-    units: i18n.__('ml/min'),
+    units: 'ml/min',
   },
   consumption2: {
     symbol: 'Q',
-    units: i18n.__('ml/min'),
+    units: 'ml/min',
   },
   pressure: {
     symbol: 'p',
-    units: i18n.__('bar'),
+    units: 'bar',
     divider: 1000,
   },
 };
@@ -121,15 +116,15 @@ const COMMANDS = [
     return a;
   },
   {
-    switchConnectionType: m => [28, m],
-    switchLoadMode: m => [32, m],
-    setValue: v => [36, 10 * v],
-    setBlowDuration1: v => [40, v],
-    setBlowPeriod1: v => [44, v],
-    setFanPower1: v => [48, v],
-    setBlowDuration2: v => [52, v],
-    setBlowPeriod2: v => [56, v],
-    setFanPower2: v => [60, v],
+    switchConnectionType: (m) => [28, m],
+    switchLoadMode: (m) => [32, m],
+    setValue: (v) => [36, 10 * v],
+    setBlowDuration1: (v) => [40, v],
+    setBlowPeriod1: (v) => [44, v],
+    setFanPower1: (v) => [48, v],
+    setBlowDuration2: (v) => [52, v],
+    setBlowPeriod2: (v) => [56, v],
+    setFanPower2: (v) => [60, v],
     startCalibration: 64,
   }
 );
@@ -150,11 +145,11 @@ const CONSTRAINTS = {
 };
 
 const CONNECTION_TYPES = [
-  i18n.__('series'),
-  i18n.__('parallel'),
-  i18n.__('only first'),
-  i18n.__('only second'),
-  i18n.__('not selected'),
+  'series',
+  'parallel',
+  'only first',
+  'only second',
+  'not selected',
 ];
 
 const SETTINGS_PATH = IS_RPI
@@ -174,5 +169,4 @@ module.exports = {
   COMMANDS,
   CONNECTION_TYPES,
   SETTINGS_PATH,
-  __: i18n.__.bind(i18n),
 };

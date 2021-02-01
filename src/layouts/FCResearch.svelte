@@ -5,14 +5,17 @@
   import RangeInput from '../molecules/RangeInput';
   import { data } from '../stores';
   import ResetButton from '../molecules/ResetButton';
-  import { COMMANDS, CONSTRAINTS, __ } from '../constants';
+  import { COMMANDS, CONSTRAINTS } from '../constants';
+  import { __ } from '../utils/translations';
   import { ipcRenderer } from 'electron';
   export let onPrev;
   export let onNext;
 
-  let isActive = $data.onoff;
+  const initialData = $data;
 
-  const valves = [$data.valve1, $data.valve2];
+  let isActive = initialData.onoff;
+
+  const valves = [initialData.valve1, initialData.valve2];
 
   const characteristics = [
     'voltage',
@@ -46,30 +49,30 @@
   ];
 
   const connectionTypeOptions = [
-    { name: 'Series', label: __('series'), value: 0 },
-    { name: 'Parallel', label: __('parallel'), value: 1 },
-    { name: 'Single', label: __('only first'), value: 2 },
-    { name: 'Single', label: __('only second'), value: 3 },
+    { name: 'Series', label: 'series', value: 0 },
+    { name: 'Parallel', label: 'parallel', value: 1 },
+    { name: 'Single', label: 'only first', value: 2 },
+    { name: 'Single', label: 'only second', value: 3 },
   ];
   const loadModeOptions = [
-    { label: __('internal load disabled'), value: 0 },
+    { label: 'internal load disabled', value: 0 },
     {
-      label: __('constant voltage'),
+      label: 'constant voltage',
       name: 'voltage',
       value: 1,
-      symbol: `U, ${__('V')}`,
+      symbol: `U, ${'V'}`,
     },
     {
-      label: __('constant current'),
+      label: 'constant current',
       name: 'current',
       value: 2,
       symbol: 'I, A',
     },
     {
-      label: __('constant power'),
+      label: 'constant power',
       name: 'power',
       value: 3,
-      symbol: `P, ${__('W')}`,
+      symbol: `P, ${'W'}`,
     },
   ];
 
@@ -122,18 +125,18 @@
 </script>
 
 <div class="layout">
-  <header>{__('fuel cell research')}</header>
+  <header>{$__('fuel cell research')}</header>
   <main>
     <div class="row first">
       <div class="select-field col">
-        <div class="label">{__('connection type')}</div>
+        <div class="label">{$__('connection type')}</div>
         <Select
           onChange={setConnectionType}
           options={connectionTypeOptions}
           selected={selectedConnectionType} />
       </div>
       <div class="select-field col">
-        <div class="label">{__('load mode')}</div>
+        <div class="label">{$__('load mode')}</div>
         <Select
           onChange={setLoadMode}
           options={loadModeOptions}
@@ -141,7 +144,7 @@
       </div>
       <div class="load-mode col">
         {#if selectedLoadMode.value}
-          <span class="label">{__('set ' + selectedLoadMode.name)}</span>
+          <span class="label">{$__('set ' + selectedLoadMode.name)}</span>
           <RangeInput
             step={0.1}
             onChange={setLoadValue}
@@ -153,11 +156,11 @@
     <div class="row">
       {#each FCColumns as { pos }}
         <div class="col o-{pos}">
-          <h3>{__('fuel cell')} {pos}</h3>
+          <h3>{$__('fuel cell')} {pos}</h3>
           <img src="../static/icons/valve.svg" alt="valve" class="icon-valve" />
           <div class="fc-toggler">
             <div class="label">
-              {@html __('H2 valve')}
+              {@html $__('H2 valve')}
             </div>
             <Toggle
               on:change={toggleFC}
@@ -169,21 +172,21 @@
       {/each}
       <div class="col onoff">
         <Button on:click={toggleAll} class="start">
-          {isActive ? __('stop') : __('start')}
+          {isActive ? $__('stop') : $__('start')}
         </Button>
       </div>
     </div>
-    <h2>{__('characteristics')}</h2>
+    <h2>{$__('characteristics')}</h2>
     <div class="row">
       {#each FCColumns as { pos, characteristics }}
         <div class="col o-{pos}">
-          <h4>{__('fuel cell')} {pos}</h4>
+          <h4>{$__('fuel cell')} {pos}</h4>
           <ul class="single">
             {#each characteristics as characteristic}
               <li>
                 <span class="label">
-                  {@html $data[characteristic + pos].symbol}
-                  , {$data[characteristic + pos].units}
+                  {@html $__(initialData[characteristic + pos].symbol)}
+                  , {$__(initialData[characteristic + pos].units)}
                 </span>
                 <strong class="value">
                   {#if characteristic == 'current' && $data[characteristic + pos].value < 0.04}
@@ -196,13 +199,13 @@
         </div>
       {/each}
       <div class="col">
-        <h4>{__('common')}</h4>
+        <h4>{$__('common')}</h4>
         <ul class="common">
           {#each commonCharacteristics as characteristic}
             <li>
               <span class="label">
-                {@html $data[characteristic].symbol}
-                , {$data[characteristic].units}
+                {@html $__(initialData[characteristic].symbol)}
+                , {$__(initialData[characteristic].units)}
               </span>
               <strong class="value">
                 {#if characteristic.startsWith('current') && $data[characteristic].value < 0.04}
@@ -217,10 +220,10 @@
   </main>
   <footer class="row">
     <div class="col">
-      <Button on:click={onPrev}>{__('back')}</Button>
+      <Button on:click={onPrev}>{$__('back')}</Button>
     </div>
     <div class="col">
-      <Button on:click={onNext}>{__('charts')}</Button>
+      <Button on:click={onNext}>{$__('charts')}</Button>
     </div>
     <div class="col" />
   </footer>

@@ -1,7 +1,7 @@
 <script>
   import { data } from '../stores';
   import { LOW_PRESSURE } from '../constants';
-  import { __ } from '../constants';
+  import { __ } from '../utils/translations';
 
   $: isLowPressure = $data.pressure.value < LOW_PRESSURE;
 
@@ -15,7 +15,7 @@
         fill="var(--danger-color)" />
     </svg>
     <div class="message">
-      {@html __('replace cartridge')}
+      {@html $__('replace cartridge')}
     </div>
   </div>
 {/if}
